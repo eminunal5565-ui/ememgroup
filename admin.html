@@ -79,12 +79,12 @@
     // SUPABASE BAĞLANTI BİLGİLERİ
     // ================================================================
     const SUPABASE_URL = 'https://dwktnertcnlvnruzputg.supabase.co';
-    const SUPABASE_ANON_KEY = 'dwktnertcnlvnruzputg';
+    const SUPABASE_ANON_KEY = 'sb_publishable_6DJRXuxpH1BYHEX7O-6N4w_f6btyhWk';
 
     // ================================================================
     // GİRİŞ KONTROLÜ
     // ================================================================
-    const ADMIN_SIFRE = 'emem2026'; // Değiştirebilirsin!
+    const ADMIN_SIFRE = 'emem2026';
 
     function girisYap() {
         const girilen = document.getElementById('sifreInput').value;
@@ -109,7 +109,7 @@
     });
 
     // ================================================================
-    // PROJELERİ LİSTELE (Admin)
+    // PROJELERİ LİSTELE
     // ================================================================
     async function projeleriListele() {
         try {
@@ -119,12 +119,17 @@
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                 }
             });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Hatası: ${response.status}`);
+            }
+            
             const projeler = await response.json();
             const container = document.getElementById('projeListesiAdmin');
             document.getElementById('projeSayisi').textContent = projeler.length;
             
             if (projeler.length === 0) {
-                container.innerHTML = '<p style="color: rgba(255,255,255,0.3); text-align: center; padding: 40px 0;">Henüz proje yok. İlk projeni ekle! 🚀</p>';
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.3); text-align: center; padding: 40px 0;">📭 Henüz proje yok. İlk projeni ekle! 🚀</p>';
                 return;
             }
 
@@ -143,7 +148,7 @@
             
         } catch (hata) {
             console.error('Listeleme hatası:', hata);
-            document.getElementById('projeListesiAdmin').innerHTML = '<p style="color: #f87171;">❌ Projeler yüklenemedi.</p>';
+            document.getElementById('projeListesiAdmin').innerHTML = `<p style="color: #f87171;">❌ Projeler yüklenemedi: ${hata.message}</p>`;
         }
     }
 
@@ -177,7 +182,9 @@
             })
         })
         .then(res => {
-            if (!res.ok) throw new Error('Ekleme hatası');
+            if (!res.ok) {
+                return res.text().then(text => { throw new Error(`HTTP ${res.status}: ${text}`); });
+            }
             return res.json();
         })
         .then(() => {
@@ -204,7 +211,7 @@
             }
         })
         .then(res => {
-            if (!res.ok) throw new Error('Silme hatası');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             alert('✅ Proje silindi.');
             projeleriListele();
         })
@@ -245,7 +252,7 @@
             body: JSON.stringify(guncelVeri)
         })
         .then(res => {
-            if (!res.ok) throw new Error('Güncelleme hatası');
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             alert('✅ Proje güncellendi.');
             projeleriListele();
         })

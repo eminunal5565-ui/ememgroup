@@ -692,7 +692,7 @@
         }
 
         /* ================================================================
-           PROJELER
+           PROJELER - SUPABASE İLE DİNAMİK
         ================================================================ */
         .projects-grid {
             display: grid;
@@ -1483,16 +1483,12 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- ================================================================
-    YAPAY ZEKA ASİSTANI - SOHBET BUTONU
-    ================================================================ -->
+    <!-- YAPAY ZEKA ASİSTANI - BUTON -->
     <button class="chat-btn" id="chatBtn" aria-label="Yapay Zeka Asistanı">
         🤖
     </button>
 
-    <!-- ================================================================
-    YAPAY ZEKA ASİSTANI - SOHBET PENCERESİ
-    ================================================================ -->
+    <!-- YAPAY ZEKA ASİSTANI - PENCERE -->
     <div class="chat-window" id="chatWindow">
         <div class="chat-header">
             <h3>🤖 EMEM AI <span class="status"></span></h3>
@@ -1671,7 +1667,7 @@
         </div>
     </section>
 
-    <!-- PROJELER -->
+    <!-- PROJELER - SUPABASE'DEN DİNAMİK -->
     <section id="projeler" style="background: rgba(255,255,255,0.01);">
         <div class="container">
             <div class="text-center">
@@ -1679,35 +1675,8 @@
                 <h2 class="section-title">Öne Çıkan <span class="highlight">Projeler</span></h2>
                 <p class="section-subtitle mx-auto">EMEM GROUP'un geliştirdiği başarılı projeler.</p>
             </div>
-            <div class="projects-grid" style="margin-top:48px;">
-                <div class="project-card">
-                    <span class="icon">🧠</span>
-                    <div class="project-tags"><span>Python</span><span>TensorFlow</span><span>NLP</span></div>
-                    <h3>Yapay Zeka Asistanı</h3>
-                    <p class="desc">Doğal dil işleme ile çalışan akıllı asistan uygulaması.</p>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-                <div class="project-card">
-                    <span class="icon">📊</span>
-                    <div class="project-tags"><span>Python</span><span>Pandas</span><span>OpenPyXL</span></div>
-                    <h3>Excel Otomasyon Aracı</h3>
-                    <p class="desc">Büyük verileri otomatik işleyen, rapor üreten akıllı araç.</p>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-                <div class="project-card">
-                    <span class="icon">🤖</span>
-                    <div class="project-tags"><span>Python</span><span>Telegram API</span><span>Asyncio</span></div>
-                    <h3>Telegram Botu</h3>
-                    <p class="desc">Otomatik mesajlaşma, yönetim ve bildirim botu.</p>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-                <div class="project-card">
-                    <span class="icon">🛡️</span>
-                    <div class="project-tags"><span>Python</span><span>Nmap</span><span>Scapy</span></div>
-                    <h3>Siber Güvenlik Aracı</h3>
-                    <p class="desc">Ağ güvenlik tarama, analiz ve raporlama aracı.</p>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
+            <div class="projects-grid" id="projeListesi" style="margin-top:48px;">
+                <p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">⏳ Projeler yükleniyor...</p>
             </div>
         </div>
     </section>
@@ -1982,6 +1951,61 @@
         counters.forEach(counter => {
             observer.observe(counter);
         });
+
+        // ================================================================
+        // SUPABASE BAĞLANTISI - PROJELERİ ÇEK
+        // ================================================================
+        const SUPABASE_URL = 'https://dwktnertcnlvnruzputg.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_6DJRXuxpH1BYHEX7O-6N4w_f6btyhWk';
+
+        async function projeleriGetir() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/projeler?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP hatası: ${response.status}`);
+                }
+                
+                const projeler = await response.json();
+                const container = document.getElementById('projeListesi');
+                container.innerHTML = '';
+
+                if (projeler.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">📭 Henüz proje eklenmemiş.</p>';
+                    return;
+                }
+
+                projeler.forEach(proje => {
+                    const kart = document.createElement('div');
+                    kart.className = 'project-card';
+                    
+                    const etiketlerHTML = proje.etiketler && proje.etiketler.length > 0 
+                        ? proje.etiketler.map(etiket => `<span>${etiket}</span>`).join('') 
+                        : '';
+                    
+                    kart.innerHTML = `
+                        <span class="icon">${proje.ikon || '📁'}</span>
+                        <div class="project-tags">${etiketlerHTML}</div>
+                        <h3>${proje.baslik}</h3>
+                        <p class="desc">${proje.aciklama || ''}</p>
+                        <a href="${proje.dosya_url || '#'}" class="btn-download"><i class="fas fa-download"></i> İndir</a>
+                    `;
+                    container.appendChild(kart);
+                });
+                
+            } catch (hata) {
+                console.error('Projeler yüklenirken hata:', hata);
+                document.getElementById('projeListesi').innerHTML = '<p style="color: #f87171; text-align: center; grid-column: 1 / -1;">❌ Projeler yüklenemedi. Lütfen daha sonra tekrar deneyin.</p>';
+            }
+        }
+
+        // Sayfa yüklendiğinde projeleri çek
+        document.addEventListener('DOMContentLoaded', projeleriGetir);
 
         // ================================================================
         // YAPAY ZEKA ASİSTANI - SOHBET BOTU
