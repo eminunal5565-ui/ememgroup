@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Paneli | EMEM GROUP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a1a;
+            color: #fff;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 24px;
+            padding: 40px;
+        }
+        h1 { font-size: 2rem; margin-bottom: 4px; }
+        .subtitle { color: rgba(255,255,255,0.4); margin-bottom: 30px; }
+        .login-box { max-width: 400px; margin: 0 auto; }
+        .login-box input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: #fff; font-size: 1rem; }
+        .login-box button { width: 100%; padding: 14px; background: linear-gradient(135deg, #6C63FF, #5A52D5); border: none; border-radius: 12px; color: #fff; font-weight: 600; font-size: 1rem; cursor: pointer; transition: 0.3s; }
+        .login-box button:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(108,99,255,0.3); }
+        .error { color: #f87171; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .panel { display: none; }
+        .panel-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+        .btn-ekle { background: #34D399; color: #0a0a1a; padding: 10px 24px; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-ekle:hover { transform: scale(1.02); }
+        .proje-kart { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .proje-kart .info h3 { font-size: 1.1rem; font-weight: 600; }
+        .proje-kart .info p { color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+        .proje-kart .actions button { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; margin-left: 6px; transition: 0.3s; font-size: 0.75rem; }
+        .proje-kart .actions button:hover { background: rgba(255,255,255,0.12); }
+        .proje-kart .actions .sil { color: #f87171; }
+        .proje-kart .actions .sil:hover { background: rgba(248,113,113,0.15); }
+        .cikis-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); color: #fff; padding: 8px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+        .cikis-btn:hover { background: rgba(255,255,255,0.12); }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <h1>📋 Admin Paneli</h1>
+    <p class="subtitle">EMEM GROUP projelerini yönet</p>
+
+    <!-- GİRİŞ EKRANI -->
+    <div id="loginBox" class="login-box">
+        <input type="password" id="sifreInput" placeholder="Admin şifresini girin" />
+        <button onclick="girisYap()">Giriş Yap</button>
+        <div id="hataMesaji" class="error">❌ Şifre yanlış, tekrar deneyin.</div>
+    </div>
+
+    <!-- YÖNETİM PANELİ -->
+    <div id="panel" class="panel">
+        <div class="panel-header">
+            <div><span style="color: rgba(255,255,255,0.4);">Toplam:</span> <span id="projeSayisi">0</span> proje</div>
+            <div>
+                <button class="btn-ekle" onclick="yeniProjeFormu()"><i class="fas fa-plus"></i> Yeni Proje</button>
+                <button class="cikis-btn" onclick="cikisYap()"><i class="fas fa-sign-out-alt"></i> Çıkış</button>
+            </div>
+        </div>
+        <div id="projeListesiAdmin"></div>
+    </div>
+</div>
+
+<script>
+    // ================================================================
+    // SUPABASE BAĞLANTI BİLGİLERİ
+    // ================================================================
+    const SUPABASE_URL = 'https://dwktnertcnlvnruzputg.supabase.co';
+    const SUPABASE_ANON_KEY = 'dwktnertcnlvnruzputg';
+
+    // ================================================================
+    // GİRİŞ KONTROLÜ
+    // ================================================================
+    const ADMIN_SIFRE = 'emem2026'; // Değiştirebilirsin!
+
+    function girisYap() {
+        const girilen = document.getElementById('sifreInput').value;
+        if (girilen === ADMIN_SIFRE) {
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('panel').style.display = 'block';
+            projeleriListele();
+        } else {
+            document.getElementById('hataMesaji').style.display = 'block';
+        }
+    }
+
+    function cikisYap() {
+        document.getElementById('panel').style.display = 'none';
+        document.getElementById('loginBox').style.display = 'block';
+        document.getElementById('sifreInput').value = '';
+        document.getElementById('hataMesaji').style.display = 'none';
+    }
+
+    document.getElementById('sifreInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') girisYap();
+    });
+
+    // ================================================================
+    // PROJELERİ LİSTELE (Admin)
+    // ================================================================
+    async function projeleriListele() {
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/projeler?select=*`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+            const projeler = await response.json();
+            const container = document.getElementById('projeListesiAdmin');
+            document.getElementById('projeSayisi').textContent = projeler.length;
+            
+            if (projeler.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.3); text-align: center; padding: 40px 0;">Henüz proje yok. İlk projeni ekle! 🚀</p>';
+                return;
+            }
+
+            container.innerHTML = projeler.map(p => `
+                <div class="proje-kart">
+                    <div class="info">
+                        <h3>${p.ikon || '📁'} ${p.baslik}</h3>
+                        <p>${p.aciklama || ''}</p>
+                    </div>
+                    <div class="actions">
+                        <button onclick="projeDuzenle('${p.id}')"><i class="fas fa-edit"></i> Düzenle</button>
+                        <button class="sil" onclick="projeSil('${p.id}')"><i class="fas fa-trash"></i> Sil</button>
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch (hata) {
+            console.error('Listeleme hatası:', hata);
+            document.getElementById('projeListesiAdmin').innerHTML = '<p style="color: #f87171;">❌ Projeler yüklenemedi.</p>';
+        }
+    }
+
+    // ================================================================
+    // YENİ PROJE EKLE
+    // ================================================================
+    function yeniProjeFormu() {
+        const baslik = prompt('📌 Proje başlığı:');
+        if (!baslik) return;
+        const aciklama = prompt('📝 Açıklama:');
+        const ikon = prompt('🎨 Emoji/İkon (örn: 🧠):', '📁');
+        const etiketler = prompt('🏷️ Etiketler (virgülle ayır, örn: Python, React):', 'Python');
+        const dosya_url = prompt('🔗 Dosya linki (URL):', '#');
+
+        const etiketArray = etiketler ? etiketler.split(',').map(e => e.trim()) : [];
+
+        fetch(`${SUPABASE_URL}/rest/v1/projeler`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({
+                baslik: baslik,
+                aciklama: aciklama || '',
+                ikon: ikon || '📁',
+                etiketler: etiketArray,
+                dosya_url: dosya_url || '#'
+            })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Ekleme hatası');
+            return res.json();
+        })
+        .then(() => {
+            alert('✅ Proje başarıyla eklendi!');
+            projeleriListele();
+        })
+        .catch(hata => {
+            alert('❌ Proje eklenirken hata oluştu: ' + hata.message);
+            console.error(hata);
+        });
+    }
+
+    // ================================================================
+    // PROJE SİL
+    // ================================================================
+    function projeSil(id) {
+        if (!confirm('⚠️ Bu projeyi silmek istediğine emin misin?')) return;
+        
+        fetch(`${SUPABASE_URL}/rest/v1/projeler?id=eq.${id}`, {
+            method: 'DELETE',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Silme hatası');
+            alert('✅ Proje silindi.');
+            projeleriListele();
+        })
+        .catch(hata => {
+            alert('❌ Silme hatası: ' + hata.message);
+            console.error(hata);
+        });
+    }
+
+    // ================================================================
+    // PROJE DÜZENLE
+    // ================================================================
+    function projeDuzenle(id) {
+        const yeniBaslik = prompt('📌 Yeni başlık:');
+        if (yeniBaslik === null) return;
+        const yeniAciklama = prompt('📝 Yeni açıklama:');
+        const yeniIkon = prompt('🎨 Yeni ikon:', '📁');
+        const yeniDosya = prompt('🔗 Yeni dosya linki:', '#');
+
+        const guncelVeri = {};
+        if (yeniBaslik !== '') guncelVeri.baslik = yeniBaslik;
+        if (yeniAciklama !== null) guncelVeri.aciklama = yeniAciklama;
+        if (yeniIkon !== null) guncelVeri.ikon = yeniIkon;
+        if (yeniDosya !== null) guncelVeri.dosya_url = yeniDosya;
+
+        if (Object.keys(guncelVeri).length === 0) {
+            alert('Hiçbir değişiklik yapılmadı.');
+            return;
+        }
+
+        fetch(`${SUPABASE_URL}/rest/v1/projeler?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(guncelVeri)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('Güncelleme hatası');
+            alert('✅ Proje güncellendi.');
+            projeleriListele();
+        })
+        .catch(hata => {
+            alert('❌ Güncelleme hatası: ' + hata.message);
+            console.error(hata);
+        });
+    }
+
+    console.log('🛠️ EMEM GROUP Admin Paneli hazır!');
+</script>
+</body>
+</html>

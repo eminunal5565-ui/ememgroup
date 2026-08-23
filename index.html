@@ -955,7 +955,7 @@
         }
 
         /* ================================================================
-           İLETİŞİM - FORMPREE ENTEGRE (Yeni ID: mnpayagg)
+           İLETİŞİM - FORMPREE
         ================================================================ */
         .contact-grid {
             display: grid;
@@ -1056,6 +1056,262 @@
         .whatsapp-float:hover {
             transform: scale(1.1) rotate(-5deg);
             box-shadow: 0 12px 45px rgba(37, 211, 102, 0.45);
+        }
+
+        /* ================================================================
+           YAPAY ZEKA ASİSTANI - SOHBET BOTU
+        ================================================================ */
+        .chat-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            z-index: 999;
+            background: linear-gradient(135deg, #6C63FF, #5A52D5);
+            color: #fff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 8px 35px rgba(108, 99, 255, 0.3);
+            transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: none;
+        }
+
+        .chat-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 45px rgba(108, 99, 255, 0.45);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 170px;
+            right: 30px;
+            width: 350px;
+            max-height: 450px;
+            background: rgba(20, 20, 40, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            z-index: 999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: 0.3s ease;
+        }
+
+        .chat-window.open {
+            display: flex;
+        }
+
+        .chat-header {
+            padding: 16px 20px;
+            background: rgba(108, 99, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .chat-header h3 .status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #34D399;
+            border-radius: 50%;
+            margin-left: 8px;
+            animation: pulseDot 2s ease-in-out infinite;
+        }
+
+        .chat-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.3s ease;
+        }
+
+        .chat-close:hover {
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 16px 20px;
+            overflow-y: auto;
+            max-height: 280px;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(108, 99, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .chat-msg {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-msg .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+
+        .chat-msg.bot .avatar {
+            background: rgba(108, 99, 255, 0.15);
+        }
+
+        .chat-msg.user .avatar {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .chat-msg .bubble {
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            max-width: 85%;
+            word-wrap: break-word;
+        }
+
+        .chat-msg.bot .bubble {
+            background: rgba(255, 255, 255, 0.04);
+            color: #e5e7eb;
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-msg.user .bubble {
+            background: linear-gradient(135deg, #6C63FF, #5A52D5);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+            margin-left: auto;
+        }
+
+        .chat-msg .time {
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.2);
+            margin-top: 4px;
+            display: block;
+        }
+
+        .chat-footer {
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 30px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-family: "Inter", sans-serif;
+            outline: none;
+            transition: 0.3s ease;
+        }
+
+        .chat-footer input:focus {
+            border-color: rgba(108, 99, 255, 0.2);
+        }
+
+        .chat-footer input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-footer button {
+            background: linear-gradient(135deg, #6C63FF, #5A52D5);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            transition: 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-footer button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(108, 99, 255, 0.3);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.2; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .chat-window {
+                width: calc(100% - 40px);
+                right: 20px;
+                bottom: 150px;
+                max-height: 400px;
+            }
+            .chat-btn {
+                width: 54px;
+                height: 54px;
+                font-size: 1.4rem;
+                bottom: 80px;
+                right: 20px;
+            }
         }
 
         /* ================================================================
@@ -1196,6 +1452,8 @@
             .footer-bottom { flex-direction: column; text-align: center; }
             .hero-stats { flex-direction: column; gap: 16px; align-items: center; }
             .whatsapp-float { width: 50px; height: 50px; font-size: 1.4rem; bottom: 20px; right: 20px; }
+            .chat-btn { width: 50px; height: 50px; font-size: 1.4rem; bottom: 80px; right: 20px; }
+            .chat-window { width: calc(100% - 40px); right: 20px; bottom: 140px; }
             .team-grid { max-width: 100%; }
         }
 
@@ -1224,6 +1482,28 @@
        aria-label="WhatsApp ile iletişime geç">
         <i class="fab fa-whatsapp"></i>
     </a>
+
+    <!-- ================================================================
+    YAPAY ZEKA ASİSTANI - SOHBET BUTONU
+    ================================================================ -->
+    <button class="chat-btn" id="chatBtn" aria-label="Yapay Zeka Asistanı">
+        🤖
+    </button>
+
+    <!-- ================================================================
+    YAPAY ZEKA ASİSTANI - SOHBET PENCERESİ
+    ================================================================ -->
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <h3>🤖 EMEM AI <span class="status"></span></h3>
+            <button class="chat-close" id="chatClose">✕</button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Mesajını yaz..." />
+            <button id="chatSend"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
 
     <!-- NAVBAR -->
     <nav class="navbar" id="navbar">
@@ -1528,9 +1808,7 @@
         </div>
     </section>
 
-    <!-- ================================================================
-    İLETİŞİM - YENİ FORMPREE ID: mnpayagg
-    ================================================================ -->
+    <!-- İLETİŞİM -->
     <section id="iletisim">
         <div class="container">
             <div class="text-center">
@@ -1540,16 +1818,10 @@
                     Projeleriniz veya sorularınız için bize yazın, en kısa sürede dönüş yapalım.
                 </p>
             </div>
-
             <div class="contact-grid" style="margin-top:48px;">
-                <!-- İletişim Bilgileri -->
                 <div class="contact-info">
                     <h3>İletişim Bilgileri</h3>
-                    <p>
-                        EMEM GROUP olarak, projelerinizi konuşmak ve
-                        size özel çözümler sunmak için buradayız.
-                    </p>
-
+                    <p>EMEM GROUP olarak, projelerinizi konuşmak ve size özel çözümler sunmak için buradayız.</p>
                     <div class="contact-item">
                         <span class="icon"><i class="fas fa-envelope"></i></span>
                         <span>info@ememgroup.com</span>
@@ -1566,7 +1838,6 @@
                         <span class="icon"><i class="fas fa-clock"></i></span>
                         <span>Pazartesi - Cuma: 09:00 - 18:00</span>
                     </div>
-
                     <div style="display:flex;gap:14px;margin-top:24px;">
                         <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-linkedin-in"></i></a>
                         <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-github"></i></a>
@@ -1575,8 +1846,6 @@
                         <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
-
-                <!-- ⭐ FORMPREE FORMU - YENİ ID -->
                 <form action="https://formspree.io/f/mnpayagg" method="POST" class="contact-form">
                     <input type="text" name="name" placeholder="Adınız *" required />
                     <input type="email" name="email" placeholder="E-posta adresiniz *" required />
@@ -1594,11 +1863,7 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <h3>EMEM GROUP</h3>
-                    <p>
-                        Siber güvenlik, otomasyon ve uygulama geliştirme
-                        alanlarında uzman, yenilikçi yazılım çözümleri sunan
-                        dinamik bir ekip.
-                    </p>
+                    <p>Siber güvenlik, otomasyon ve uygulama geliştirme alanlarında uzman, yenilikçi yazılım çözümleri sunan dinamik bir ekip.</p>
                 </div>
                 <div class="footer-col">
                     <h4>Hızlı Linkler</h4>
@@ -1638,9 +1903,13 @@
         </div>
     </footer>
 
-    <!-- JAVASCRIPT -->
+    <!-- ================================================================
+    JAVASCRIPT
+    ================================================================ -->
     <script>
-        // Hamburger Menu
+        // ================================================================
+        // NAVBAR
+        // ================================================================
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
 
@@ -1654,7 +1923,6 @@
             });
         });
 
-        // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
@@ -1664,7 +1932,9 @@
             }
         });
 
-        // Counter Animation
+        // ================================================================
+        // SAYAÇ ANİMASYONU
+        // ================================================================
         const counters = document.querySelectorAll('.counter');
 
         const animateCounter = (counter) => {
@@ -1713,8 +1983,157 @@
             observer.observe(counter);
         });
 
+        // ================================================================
+        // YAPAY ZEKA ASİSTANI - SOHBET BOTU
+        // ================================================================
+
+        // ----- BİLGİ VERİTABANI -----
+        const knowledgeBase = [
+            {
+                keywords: ["merhaba", "selam", "hey", "hi", "hello"],
+                response: "Merhaba! 👋 EMEM GROUP Yapay Zeka Asistanı'yım. Size nasıl yardımcı olabilirim?"
+            },
+            {
+                keywords: ["nasılsın", "naber", "iyi misin", "how are you"],
+                response: "Harikayım! 🚀 Size yardımcı olmak için buradayım. Sizinle sohbet etmek ne güzel!"
+            },
+            {
+                keywords: ["emem", "emem group", "şirket", "firma", "hakkınızda"],
+                response: "EMEM GROUP, siber güvenlik, otomasyon ve yazılım geliştirme alanlarında uzman, yenilikçi bir yazılım şirketidir. Ekibimiz Emrullah Çelenk (Siber Güvenlik) ve Emin Ünal (Yazılım Geliştirme) olmak üzere iki uzmandan oluşur. Daha fazla bilgi için web sitemizi keşfedin! 🌐"
+            },
+            {
+                keywords: ["hizmet", "hizmetler", "ne yapıyorsunuz", "işler"],
+                response: "EMEM GROUP olarak şu hizmetleri sunuyoruz:\n🛡️ Siber Güvenlik\n🤖 Otomasyon\n🌐 Web Geliştirme\n📱 Mobil Uygulama\n💻 Masaüstü Yazılım\n🧠 Yapay Zeka\n\nDetaylar için Hizmetler bölümüne bakabilirsiniz!"
+            },
+            {
+                keywords: ["emrullah", "emrullah çelenk", "siber güvenlik uzmanı"],
+                response: "Emrullah Çelenk, EMEM GROUP'un Siber Güvenlik Uzmanı'dır. Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi ve siber tehdit istihbaratı alanlarında uzmanlaşmıştır. 🛡️"
+            },
+            {
+                keywords: ["emin", "emin ünal", "yazılım geliştirme uzmanı"],
+                response: "Emin Ünal, EMEM GROUP'un Yazılım Geliştirme Uzmanı'dır. Otomasyon, uygulama geliştirme, web sitesi yapımı ve yapay zeka alanlarında uzmanlaşmıştır. 💻"
+            },
+            {
+                keywords: ["proje", "projeler", "çalışma", "portföy"],
+                response: "Öne çıkan projelerimiz:\n🧠 Yapay Zeka Asistanı\n📊 Excel Otomasyon Aracı\n🤖 Telegram Botu\n🛡️ Siber Güvenlik Aracı\n\nDetaylar için Projeler bölümüne göz atabilirsiniz!"
+            },
+            {
+                keywords: ["iletişim", "ulaş", "mail", "adres", "telefon", "numara"],
+                response: "Bize şu kanallardan ulaşabilirsiniz:\n📧 info@ememgroup.com\n📞 +90 555 555 55 55\n📍 İstanbul / Türkiye\n\nİletişim formunu doldurarak da bize yazabilirsiniz! 📬"
+            },
+            {
+                keywords: ["indirme", "download", "araç", "araçlar", "indir"],
+                response: "Tüm araçlarımıza İndirme Merkezi'nden ulaşabilirsiniz. Yapay Zeka Asistanı, Excel Otomasyon Aracı, Telegram Botu ve Siber Güvenlik Aracı ücretsiz olarak indirilmeye hazır! 📦"
+            },
+            {
+                keywords: ["teşekkür", "sağol", "tesekkürler", "thanks", "sağ ol"],
+                response: "Rica ederim! 🎉 Size yardımcı olabildiğime çok sevindim. Başka sorularınız varsa her zaman buradayım. EMEM GROUP ailesi olarak sizi ağırlamaktan mutluluk duyarız! 🌟"
+            },
+            {
+                keywords: ["görüşürüz", "hoşçakal", "bye", "goodbye", "güle güle"],
+                response: "Görüşmek üzere! 👋 Her zaman kapımız açık. EMEM GROUP olarak sizi bekleriz. İyi günler dileriz! 🌟"
+            }
+        ];
+
+        // ----- YANIT BULMA -----
+        function findResponse(message) {
+            const lowerMsg = message.toLowerCase();
+
+            if (message.trim().length === 0) {
+                return "Lütfen bir şeyler yazın. Size yardımcı olmaktan mutluluk duyarım! 🤖";
+            }
+
+            for (let item of knowledgeBase) {
+                for (let keyword of item.keywords) {
+                    if (lowerMsg.includes(keyword)) {
+                        return item.response;
+                    }
+                }
+            }
+
+            return "🤔 Hmm, bunu henüz öğrenmedim. Bana biraz daha bilgi verebilir misiniz? Ya da doğrudan iletişim formundan bize ulaşabilirsiniz! 📬";
+        }
+
+        // ----- CHAT FONKSİYONLARI -----
+        const chatBtn = document.getElementById('chatBtn');
+        const chatWindow = document.getElementById('chatWindow');
+        const chatClose = document.getElementById('chatClose');
+        const chatMessages = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+
+        chatBtn.addEventListener('click', () => {
+            chatWindow.classList.toggle('open');
+            if (chatWindow.classList.contains('open')) {
+                chatInput.focus();
+                if (chatMessages.children.length === 0) {
+                    addMessage('bot', 'Merhaba! 👋 EMEM GROUP Yapay Zeka Asistanı\'yım. Size nasıl yardımcı olabilirim?');
+                }
+            }
+        });
+
+        chatClose.addEventListener('click', () => {
+            chatWindow.classList.remove('open');
+        });
+
+        function addMessage(sender, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${sender}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar';
+            avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            bubble.innerHTML = text.replace(/\n/g, '<br>');
+
+            const time = document.createElement('span');
+            time.className = 'time';
+            const now = new Date();
+            time.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            bubble.appendChild(time);
+            msgDiv.appendChild(avatar);
+            msgDiv.appendChild(bubble);
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function sendMessage() {
+            const message = chatInput.value.trim();
+            if (message === '') return;
+
+            addMessage('user', message);
+            chatInput.value = '';
+
+            setTimeout(() => {
+                const response = findResponse(message);
+                addMessage('bot', response);
+            }, 400 + Math.random() * 600);
+        }
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        chatSend.addEventListener('click', sendMessage);
+
+        document.addEventListener('click', (e) => {
+            if (chatWindow.classList.contains('open')) {
+                const isClickInside = chatWindow.contains(e.target) || chatBtn.contains(e.target);
+                if (!isClickInside) {
+                    chatWindow.classList.remove('open');
+                }
+            }
+        });
+
         console.log('🚀 EMEM GROUP - Dijital Dönüşüm Lideri');
         console.log('📧 info@ememgroup.com');
+        console.log('🤖 Yapay Zeka Asistanı hazır!');
     </script>
 
 </body>
