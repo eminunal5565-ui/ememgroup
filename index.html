@@ -49,7 +49,7 @@
         }
 
         /* ================================================================
-           ARKA PLAN - 1.png (Fotoğrafın)
+           ARKA PLAN - 1.png
         ================================================================ */
         .bg-image {
             position: fixed;
@@ -76,7 +76,6 @@
             pointer-events: none;
         }
 
-        /* Glow Işık Efektleri */
         .glow-orb {
             position: fixed;
             border-radius: 50%;
@@ -170,7 +169,7 @@
         }
 
         /* ================================================================
-           NAVBAR - Ultra Premium
+           NAVBAR
         ================================================================ */
         .navbar {
             position: fixed;
@@ -308,7 +307,7 @@
         }
 
         /* ================================================================
-           HERO - Estetik
+           HERO
         ================================================================ */
         .hero {
             min-height: 100vh;
@@ -457,7 +456,6 @@
             font-weight: 400;
         }
 
-        /* Hero Visual - Estetik Kod Penceresi */
         .hero-visual {
             position: relative;
         }
@@ -549,7 +547,7 @@
         }
 
         /* ================================================================
-           HİZMETLER - Estetik
+           HİZMETLER
         ================================================================ */
         .services-grid {
             display: grid;
@@ -610,7 +608,7 @@
         }
 
         /* ================================================================
-           EKİP - Premium
+           EKİP
         ================================================================ */
         .team-grid {
             display: grid;
@@ -694,7 +692,7 @@
         }
 
         /* ================================================================
-           PROJELER - Premium
+           PROJELER
         ================================================================ */
         .projects-grid {
             display: grid;
@@ -773,7 +771,7 @@
         }
 
         /* ================================================================
-           BAŞARI SAYAÇLARI - Premium
+           BAŞARI SAYAÇLARI
         ================================================================ */
         .stats-grid {
             display: grid;
@@ -815,7 +813,7 @@
         }
 
         /* ================================================================
-           MÜŞTERİ YORUMLARI - Premium
+           MÜŞTERİ YORUMLARI
         ================================================================ */
         .testimonials-grid {
             display: grid;
@@ -862,7 +860,7 @@
         }
 
         /* ================================================================
-           TEKNOLOJİ - Premium
+           TEKNOLOJİ
         ================================================================ */
         .tech-grid {
             display: flex;
@@ -889,7 +887,7 @@
         }
 
         /* ================================================================
-           İNDİRME MERKEZİ - Premium
+           İNDİRME MERKEZİ
         ================================================================ */
         .download-grid {
             display: grid;
@@ -957,7 +955,7 @@
         }
 
         /* ================================================================
-           İLETİŞİM - Premium
+           İLETİŞİM - BURASI FORMSPREE İLE GÜNCELLENDİ!
         ================================================================ */
         .contact-grid {
             display: grid;
@@ -1001,6 +999,7 @@
             font-size: 0.95rem;
         }
 
+        /* ⭐ FORMSPREE FORM - GÜNCELLENDİ */
         .contact-form input,
         .contact-form textarea {
             width: 100%;
@@ -1034,7 +1033,7 @@
         }
 
         /* ================================================================
-           WHATSAPP BUTON - Premium
+           WHATSAPP BUTON
         ================================================================ */
         .whatsapp-float {
             position: fixed;
@@ -1061,7 +1060,7 @@
         }
 
         /* ================================================================
-           FOOTER - Premium
+           FOOTER
         ================================================================ */
         .footer {
             border-top: 1px solid rgba(255, 255, 255, 0.03);
@@ -1332,7 +1331,7 @@
 <body>
 
     <!-- ================================================================
-    ARKA PLAN - 1.png
+    ARKA PLAN
     ================================================================ -->
     <div class="bg-image"></div>
     <div class="gradient-overlay"></div>
@@ -1766,21 +1765,22 @@
     </section>
 
     <!-- ================================================================
-    İLETİŞİM
+    İLETİŞİM - FORMPREE ENTEGRE
     ================================================================ -->
     <section id="iletisim">
         <div class="container">
             <div class="text-center">
-                <span class="section-tag">📞 İletişim</span>
-                <h2 class="section-title">Bize <span class="highlight">Ulaşın</span></h2>
+                <span class="section-tag">📬 Bize Ulaşın</span>
+                <h2 class="section-title">Hemen <span class="highlight">Mesaj Gönderin</span></h2>
                 <p class="section-subtitle mx-auto">
-                    Projeleriniz, fikirleriniz veya sorularınız için bize ulaşmaktan çekinmeyin.
+                    Projeleriniz veya sorularınız için bize yazın, en kısa sürede dönüş yapalım.
                 </p>
             </div>
 
             <div class="contact-grid" style="margin-top:48px;">
+                <!-- İletişim Bilgileri -->
                 <div class="contact-info">
-                    <h3>Hemen İletişime Geçin</h3>
+                    <h3>İletişim Bilgileri</h3>
                     <p>
                         EMEM GROUP olarak, projelerinizi konuşmak ve
                         size özel çözümler sunmak için buradayız.
@@ -1812,11 +1812,12 @@
                     </div>
                 </div>
 
-                <form class="contact-form" onsubmit="alert('✅ Mesajınız başarıyla gönderildi!'); return false;">
-                    <input type="text" placeholder="Adınız *" required />
-                    <input type="email" placeholder="E-posta adresiniz *" required />
-                    <input type="text" placeholder="Konu" />
-                    <textarea placeholder="Mesajınız *" required></textarea>
+                <!-- ⭐ FORMSPREE İLE İLETİŞİM FORMU -->
+                <form action="https://formspree.io/f/mjybdbep" method="POST" class="contact-form">
+                    <input type="text" name="name" placeholder="Adınız *" required />
+                    <input type="email" name="email" placeholder="E-posta adresiniz *" required />
+                    <input type="text" name="konu" placeholder="Konu" />
+                    <textarea name="message" rows="4" placeholder="Mesajınız *" required></textarea>
                     <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Mesaj Gönder</button>
                 </form>
             </div>
@@ -1880,12 +1881,10 @@
     </footer>
 
     <!-- ================================================================
-    JAVASCRIPT - Premium Animasyonlar
+    JAVASCRIPT
     ================================================================ -->
     <script>
-        // ============================================================
-        // HAMBURGER MENU
-        // ============================================================
+        // Hamburger Menu
         const hamburger = document.getElementById('hamburger');
         const navLinks = document.getElementById('navLinks');
 
@@ -1899,9 +1898,7 @@
             });
         });
 
-        // ============================================================
-        // NAVBAR SCROLL EFFECT
-        // ============================================================
+        // Navbar Scroll Effect
         window.addEventListener('scroll', () => {
             const navbar = document.getElementById('navbar');
             if (window.scrollY > 50) {
@@ -1911,9 +1908,7 @@
             }
         });
 
-        // ============================================================
-        // SAYAÇ ANİMASYONU (Counter Animation)
-        // ============================================================
+        // Counter Animation
         const counters = document.querySelectorAll('.counter');
 
         const animateCounter = (counter) => {
@@ -1961,12 +1956,6 @@
         counters.forEach(counter => {
             observer.observe(counter);
         });
-
-        // ============================================================
-        // WHATSAPP NUMARASI GÜNCELLE
-        // ============================================================
-        // const whatsappLink = document.querySelector('.whatsapp-float');
-        // whatsappLink.href = 'https://wa.me/905551234567?text=Merhaba%20EMEM%20GROUP%20ile%20iletişime%20geçmek%20istiyorum';
 
         console.log('🚀 EMEM GROUP - Dijital Dönüşüm Lideri');
         console.log('📧 info@ememgroup.com');
