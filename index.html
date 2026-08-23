@@ -955,7 +955,7 @@
         }
 
         /* ================================================================
-           İLETİŞİM - BURASI FORMSPREE İLE GÜNCELLENDİ!
+           İLETİŞİM - FORMPREE ENTEGRE (Yeni ID: mnpayagg)
         ================================================================ */
         .contact-grid {
             display: grid;
@@ -999,7 +999,6 @@
             font-size: 0.95rem;
         }
 
-        /* ⭐ FORMSPREE FORM - GÜNCELLENDİ */
         .contact-form input,
         .contact-form textarea {
             width: 100%;
@@ -1153,64 +1152,20 @@
            RESPONSIVE
         ================================================================ */
         @media (max-width: 992px) {
-            .hero .container {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 40px;
-            }
-
-            .hero-content p {
-                margin: 0 auto 32px;
-            }
-
-            .hero-buttons {
-                justify-content: center;
-            }
-
-            .hero-stats {
-                justify-content: center;
-            }
-
-            .hero-visual .glow-ring {
-                display: none;
-            }
-
-            .services-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .team-grid {
-                grid-template-columns: 1fr;
-                max-width: 450px;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .testimonials-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .download-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .hero-content h1 {
-                font-size: 3rem;
-            }
+            .hero .container { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+            .hero-content p { margin: 0 auto 32px; }
+            .hero-buttons { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .hero-visual .glow-ring { display: none; }
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .team-grid { grid-template-columns: 1fr; max-width: 450px; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .testimonials-grid { grid-template-columns: 1fr 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .download-grid { grid-template-columns: repeat(2, 1fr); }
+            .contact-grid { grid-template-columns: 1fr; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+            .hero-content h1 { font-size: 3rem; }
         }
 
         @media (max-width: 768px) {
@@ -1227,120 +1182,42 @@
                 gap: 14px;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             }
-
-            .nav-links.open {
-                display: flex;
-            }
-
-            .hamburger {
-                display: flex;
-            }
-
-            .hero-content h1 {
-                font-size: 2.4rem;
-            }
-
-            .section-title {
-                font-size: 2rem;
-            }
-
-            .section-subtitle {
-                font-size: 0.95rem;
-            }
-
-            .services-grid {
-                grid-template-columns: 1fr;
-                max-width: 400px;
-                margin: 0 auto;
-            }
-
-            .testimonials-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .download-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .footer-brand p {
-                margin: 0 auto;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .hero-stats {
-                flex-direction: column;
-                gap: 16px;
-                align-items: center;
-            }
-
-            .whatsapp-float {
-                width: 50px;
-                height: 50px;
-                font-size: 1.4rem;
-                bottom: 20px;
-                right: 20px;
-            }
-
-            .team-grid {
-                max-width: 100%;
-            }
+            .nav-links.open { display: flex; }
+            .hamburger { display: flex; }
+            .hero-content h1 { font-size: 2.4rem; }
+            .section-title { font-size: 2rem; }
+            .section-subtitle { font-size: 0.95rem; }
+            .services-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+            .testimonials-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .download-grid { grid-template-columns: 1fr 1fr; }
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .footer-brand p { margin: 0 auto; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            .hero-stats { flex-direction: column; gap: 16px; align-items: center; }
+            .whatsapp-float { width: 50px; height: 50px; font-size: 1.4rem; bottom: 20px; right: 20px; }
+            .team-grid { max-width: 100%; }
         }
 
         @media (max-width: 480px) {
-            .hero-content h1 {
-                font-size: 1.8rem;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-
-            .download-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 12px;
-            }
-
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .stat-card .number {
-                font-size: 2.2rem;
-            }
+            .hero-content h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .download-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .services-grid { grid-template-columns: 1fr; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .stat-card .number { font-size: 2.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ================================================================
-    ARKA PLAN
-    ================================================================ -->
+    <!-- ARKA PLAN -->
     <div class="bg-image"></div>
     <div class="gradient-overlay"></div>
     <div class="glow-orb orb1"></div>
     <div class="glow-orb orb2"></div>
 
-    <!-- ================================================================
-    WHATSAPP BUTON
-    ================================================================ -->
+    <!-- WHATSAPP BUTON -->
     <a href="https://wa.me/905555555555?text=Merhaba%20EMEM%20GROUP%20ile%20iletişime%20geçmek%20istiyorum" 
        class="whatsapp-float" 
        target="_blank"
@@ -1348,15 +1225,12 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <!-- ================================================================
-    NAVBAR
-    ================================================================ -->
+    <!-- NAVBAR -->
     <nav class="navbar" id="navbar">
         <div class="container">
             <a href="#" class="logo">
                 <span class="brand">EMEM</span><span class="dot">.</span><span class="suffix">group</span>
             </a>
-
             <ul class="nav-links" id="navLinks">
                 <li><a href="#hizmetler">Hizmetler</a></li>
                 <li><a href="#ekip">Ekibimiz</a></li>
@@ -1364,7 +1238,6 @@
                 <li><a href="#downloads">İndirme</a></li>
                 <li><a href="#iletisim" class="btn-nav"><i class="fas fa-rocket"></i> İletişim</a></li>
             </ul>
-
             <button class="hamburger" id="hamburger" aria-label="Menu">
                 <span></span>
                 <span></span>
@@ -1373,9 +1246,7 @@
         </div>
     </nav>
 
-    <!-- ================================================================
-    HERO
-    ================================================================ -->
+    <!-- HERO -->
     <section class="hero" id="hero">
         <div class="container">
             <div class="hero-content">
@@ -1439,9 +1310,7 @@
         </div>
     </section>
 
-    <!-- ================================================================
-    HİZMETLER
-    ================================================================ -->
+    <!-- HİZMETLER -->
     <section id="hizmetler">
         <div class="container">
             <div class="text-center">
@@ -1451,45 +1320,18 @@
                     EMEM GROUP olarak, size özel yazılım çözümleri ile işinizi bir üst seviyeye taşıyoruz.
                 </p>
             </div>
-
             <div class="services-grid" style="margin-top:48px;">
-                <div class="service-card">
-                    <span class="icon">🛡️</span>
-                    <h3>Siber Güvenlik</h3>
-                    <p>Penetrasyon testleri, ağ güvenliği, güvenlik açığı analizi ve siber tehdit istihbaratı.</p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">🤖</span>
-                    <h3>Otomasyon</h3>
-                    <p>İş süreçlerini optimize eden, akıllı ve ölçeklenebilir otomasyon çözümleri.</p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">🌐</span>
-                    <h3>Web Geliştirme</h3>
-                    <p>Modern, hızlı ve responsive web siteleri ve web uygulamaları geliştiriyoruz.</p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">📱</span>
-                    <h3>Mobil Uygulama</h3>
-                    <p>iOS ve Android için native ve cross-platform mobil uygulama çözümleri.</p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">💻</span>
-                    <h3>Masaüstü Yazılım</h3>
-                    <p>Windows, macOS ve Linux için güçlü ve kullanıcı dostu masaüstü uygulamaları.</p>
-                </div>
-                <div class="service-card">
-                    <span class="icon">🧠</span>
-                    <h3>Yapay Zeka</h3>
-                    <p>Makine öğrenimi, derin öğrenme ve akıllı otomasyon çözümleri.</p>
-                </div>
+                <div class="service-card"><span class="icon">🛡️</span><h3>Siber Güvenlik</h3><p>Penetrasyon testleri, ağ güvenliği, güvenlik açığı analizi ve siber tehdit istihbaratı.</p></div>
+                <div class="service-card"><span class="icon">🤖</span><h3>Otomasyon</h3><p>İş süreçlerini optimize eden, akıllı ve ölçeklenebilir otomasyon çözümleri.</p></div>
+                <div class="service-card"><span class="icon">🌐</span><h3>Web Geliştirme</h3><p>Modern, hızlı ve responsive web siteleri ve web uygulamaları geliştiriyoruz.</p></div>
+                <div class="service-card"><span class="icon">📱</span><h3>Mobil Uygulama</h3><p>iOS ve Android için native ve cross-platform mobil uygulama çözümleri.</p></div>
+                <div class="service-card"><span class="icon">💻</span><h3>Masaüstü Yazılım</h3><p>Windows, macOS ve Linux için güçlü ve kullanıcı dostu masaüstü uygulamaları.</p></div>
+                <div class="service-card"><span class="icon">🧠</span><h3>Yapay Zeka</h3><p>Makine öğrenimi, derin öğrenme ve akıllı otomasyon çözümleri.</p></div>
             </div>
         </div>
     </section>
 
-    <!-- ================================================================
-    EKİP
-    ================================================================ -->
+    <!-- EKİP -->
     <section id="ekip" style="background: rgba(255,255,255,0.01);">
         <div class="container">
             <div class="text-center">
@@ -1499,17 +1341,13 @@
                     Her biri kendi alanında uzman, tutkulu ve yenilikçi iki yazılımcı.
                 </p>
             </div>
-
             <div class="team-grid" style="margin-top:48px;">
                 <div class="team-card">
                     <span class="avatar">🛡️</span>
                     <span class="status-badge">● Aktif</span>
                     <h3>Emrullah Çelenk</h3>
                     <span class="role">Siber Güvenlik Uzmanı</span>
-                    <p class="specialty">
-                        Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi
-                        ve siber tehdit istihbaratı alanlarında uzman.
-                    </p>
+                    <p class="specialty">Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi ve siber tehdit istihbaratı alanlarında uzman.</p>
                     <div class="tags">
                         <span>Python</span>
                         <span>Nmap</span>
@@ -1518,16 +1356,12 @@
                         <span>Kali Linux</span>
                     </div>
                 </div>
-
                 <div class="team-card">
                     <span class="avatar">💻</span>
                     <span class="status-badge">● Aktif</span>
                     <h3>Emin Ünal</h3>
                     <span class="role">Yazılım Geliştirme Uzmanı</span>
-                    <p class="specialty">
-                        Otomasyon, uygulama geliştirme, web sitesi yapımı
-                        ve yapay zeka alanlarında uzman.
-                    </p>
+                    <p class="specialty">Otomasyon, uygulama geliştirme, web sitesi yapımı ve yapay zeka alanlarında uzman.</p>
                     <div class="tags">
                         <span>Python</span>
                         <span>JavaScript</span>
@@ -1540,97 +1374,56 @@
         </div>
     </section>
 
-    <!-- ================================================================
-    BAŞARI İSTATİSTİKLERİ
-    ================================================================ -->
+    <!-- BAŞARI İSTATİSTİKLERİ -->
     <section id="istatistikler" style="padding-top:0;">
         <div class="container">
             <div class="text-center">
                 <span class="section-tag">📊 Başarı Verileri</span>
                 <h2 class="section-title">Rakamlarla <span class="highlight">EMEM GROUP</span></h2>
-                <p class="section-subtitle mx-auto">
-                    Başarılarımız ve hedeflerimiz hakkında bilgiler.
-                </p>
+                <p class="section-subtitle mx-auto">Başarılarımız ve hedeflerimiz hakkında bilgiler.</p>
             </div>
-
             <div class="stats-grid" style="margin-top:48px;">
-                <div class="stat-card">
-                    <span class="number" data-target="20">0</span>
-                    <span class="label">Tamamlanan Proje</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number" data-target="2">0</span>
-                    <span class="label">Uzman Ekip Üyesi</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number" data-target="4.9">0</span>
-                    <span class="label">Müşteri Memnuniyeti</span>
-                </div>
-                <div class="stat-card">
-                    <span class="number" data-target="100">0</span>
-                    <span class="label">Teslim Başarısı (%)</span>
-                </div>
+                <div class="stat-card"><span class="number" data-target="20">0</span><span class="label">Tamamlanan Proje</span></div>
+                <div class="stat-card"><span class="number" data-target="2">0</span><span class="label">Uzman Ekip Üyesi</span></div>
+                <div class="stat-card"><span class="number" data-target="4.9">0</span><span class="label">Müşteri Memnuniyeti</span></div>
+                <div class="stat-card"><span class="number" data-target="100">0</span><span class="label">Teslim Başarısı (%)</span></div>
             </div>
         </div>
     </section>
 
-    <!-- ================================================================
-    PROJELER
-    ================================================================ -->
+    <!-- PROJELER -->
     <section id="projeler" style="background: rgba(255,255,255,0.01);">
         <div class="container">
             <div class="text-center">
                 <span class="section-tag">📂 Portföy</span>
                 <h2 class="section-title">Öne Çıkan <span class="highlight">Projeler</span></h2>
-                <p class="section-subtitle mx-auto">
-                    EMEM GROUP'un geliştirdiği başarılı projeler.
-                </p>
+                <p class="section-subtitle mx-auto">EMEM GROUP'un geliştirdiği başarılı projeler.</p>
             </div>
-
             <div class="projects-grid" style="margin-top:48px;">
                 <div class="project-card">
                     <span class="icon">🧠</span>
-                    <div class="project-tags">
-                        <span>Python</span>
-                        <span>TensorFlow</span>
-                        <span>NLP</span>
-                    </div>
+                    <div class="project-tags"><span>Python</span><span>TensorFlow</span><span>NLP</span></div>
                     <h3>Yapay Zeka Asistanı</h3>
                     <p class="desc">Doğal dil işleme ile çalışan akıllı asistan uygulaması.</p>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                 </div>
-
                 <div class="project-card">
                     <span class="icon">📊</span>
-                    <div class="project-tags">
-                        <span>Python</span>
-                        <span>Pandas</span>
-                        <span>OpenPyXL</span>
-                    </div>
+                    <div class="project-tags"><span>Python</span><span>Pandas</span><span>OpenPyXL</span></div>
                     <h3>Excel Otomasyon Aracı</h3>
                     <p class="desc">Büyük verileri otomatik işleyen, rapor üreten akıllı araç.</p>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                 </div>
-
                 <div class="project-card">
                     <span class="icon">🤖</span>
-                    <div class="project-tags">
-                        <span>Python</span>
-                        <span>Telegram API</span>
-                        <span>Asyncio</span>
-                    </div>
+                    <div class="project-tags"><span>Python</span><span>Telegram API</span><span>Asyncio</span></div>
                     <h3>Telegram Botu</h3>
                     <p class="desc">Otomatik mesajlaşma, yönetim ve bildirim botu.</p>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                 </div>
-
                 <div class="project-card">
                     <span class="icon">🛡️</span>
-                    <div class="project-tags">
-                        <span>Python</span>
-                        <span>Nmap</span>
-                        <span>Scapy</span>
-                    </div>
+                    <div class="project-tags"><span>Python</span><span>Nmap</span><span>Scapy</span></div>
                     <h3>Siber Güvenlik Aracı</h3>
                     <p class="desc">Ağ güvenlik tarama, analiz ve raporlama aracı.</p>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
@@ -1639,63 +1432,42 @@
         </div>
     </section>
 
-    <!-- ================================================================
-    MÜŞTERİ YORUMLARI
-    ================================================================ -->
+    <!-- MÜŞTERİ YORUMLARI -->
     <section id="yorumlar">
         <div class="container">
             <div class="text-center">
                 <span class="section-tag">⭐ Referanslar</span>
                 <h2 class="section-title">Müşteri <span class="highlight">Yorumları</span></h2>
-                <p class="section-subtitle mx-auto">
-                    EMEM GROUP ile çalışanlar ne diyor?
-                </p>
+                <p class="section-subtitle mx-auto">EMEM GROUP ile çalışanlar ne diyor?</p>
             </div>
-
             <div class="testimonials-grid" style="margin-top:48px;">
                 <div class="testimonial-card">
                     <div class="stars">★★★★★</div>
-                    <p class="text">
-                        "EMEM GROUP ile çalışmak gerçekten bir ayrıcalık. 
-                        Siber güvenlik konusunda harika bir ekip."
-                    </p>
+                    <p class="text">"EMEM GROUP ile çalışmak gerçekten bir ayrıcalık. Siber güvenlik konusunda harika bir ekip."</p>
                     <p class="author"><strong>Ahmet Yılmaz</strong> · CEO, TechCorp</p>
                 </div>
-
                 <div class="testimonial-card">
                     <div class="stars">★★★★★</div>
-                    <p class="text">
-                        "Otomasyon çözümleriyle iş süreçlerimiz %70 hızlandı. 
-                        Kesinlikle tavsiye ediyorum."
-                    </p>
+                    <p class="text">"Otomasyon çözümleriyle iş süreçlerimiz %70 hızlandı. Kesinlikle tavsiye ediyorum."</p>
                     <p class="author"><strong>Mehmet Demir</strong> · Operasyon Müdürü</p>
                 </div>
-
                 <div class="testimonial-card">
                     <div class="stars">★★★★★</div>
-                    <p class="text">
-                        "Web sitemizi yeniden tasarladılar. 
-                        Hem estetik hem de performans olarak harika oldu."
-                    </p>
+                    <p class="text">"Web sitemizi yeniden tasarladılar. Hem estetik hem de performans olarak harika oldu."</p>
                     <p class="author"><strong>Zeynep Kaya</strong> · Pazarlama Uzmanı</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ================================================================
-    TEKNOLOJİ STACK
-    ================================================================ -->
+    <!-- TEKNOLOJİ STACK -->
     <section id="teknolojiler" style="background: rgba(255,255,255,0.01); padding-top: 60px; padding-bottom: 60px;">
         <div class="container">
             <div class="text-center">
                 <span class="section-tag">🔧 Teknoloji</span>
                 <h2 class="section-title">Stack <span class="highlight">Teknolojileri</span></h2>
-                <p class="section-subtitle mx-auto">
-                    Kullandığımız güncel teknoloji araçları ve diller.
-                </p>
+                <p class="section-subtitle mx-auto">Kullandığımız güncel teknoloji araçları ve diller.</p>
             </div>
-
             <div class="tech-grid" style="margin-top:32px;">
                 <span class="tech-item"><i class="fab fa-python"></i> Python</span>
                 <span class="tech-item"><i class="fab fa-react"></i> React</span>
@@ -1715,19 +1487,14 @@
         </div>
     </section>
 
-    <!-- ================================================================
-    İNDİRME MERKEZİ
-    ================================================================ -->
+    <!-- İNDİRME MERKEZİ -->
     <section id="downloads">
         <div class="container">
             <div class="text-center">
                 <span class="section-tag">📦 İndirme Merkezi</span>
                 <h2 class="section-title">Araçlarımızı <span class="highlight">Keşfedin</span></h2>
-                <p class="section-subtitle mx-auto">
-                    EMEM GROUP'un geliştirdiği ücretsiz araçları indirin.
-                </p>
+                <p class="section-subtitle mx-auto">EMEM GROUP'un geliştirdiği ücretsiz araçları indirin.</p>
             </div>
-
             <div class="download-grid" style="margin-top:48px;">
                 <div class="download-card">
                     <span class="icon">🧠</span>
@@ -1736,7 +1503,6 @@
                     <span class="version">v1.2.0</span>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                 </div>
-
                 <div class="download-card">
                     <span class="icon">📊</span>
                     <h4>Excel Otomasyon Aracı</h4>
@@ -1744,7 +1510,6 @@
                     <span class="version">v2.0.1</span>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                 </div>
-
                 <div class="download-card">
                     <span class="icon">🤖</span>
                     <h4>Telegram Botu</h4>
@@ -1752,7 +1517,6 @@
                     <span class="version">v1.0.0</span>
                     <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                 </div>
-
                 <div class="download-card">
                     <span class="icon">🛡️</span>
                     <h4>Siber Güvenlik Aracı</h4>
@@ -1765,7 +1529,7 @@
     </section>
 
     <!-- ================================================================
-    İLETİŞİM - FORMPREE ENTEGRE
+    İLETİŞİM - YENİ FORMPREE ID: mnpayagg
     ================================================================ -->
     <section id="iletisim">
         <div class="container">
@@ -1812,8 +1576,8 @@
                     </div>
                 </div>
 
-                <!-- ⭐ FORMSPREE İLE İLETİŞİM FORMU -->
-                <form action="https://formspree.io/f/mjybdbep" method="POST" class="contact-form">
+                <!-- ⭐ FORMPREE FORMU - YENİ ID -->
+                <form action="https://formspree.io/f/mnpayagg" method="POST" class="contact-form">
                     <input type="text" name="name" placeholder="Adınız *" required />
                     <input type="email" name="email" placeholder="E-posta adresiniz *" required />
                     <input type="text" name="konu" placeholder="Konu" />
@@ -1824,9 +1588,7 @@
         </div>
     </section>
 
-    <!-- ================================================================
-    FOOTER
-    ================================================================ -->
+    <!-- FOOTER -->
     <footer class="footer">
         <div class="container">
             <div class="footer-grid">
@@ -1838,7 +1600,6 @@
                         dinamik bir ekip.
                     </p>
                 </div>
-
                 <div class="footer-col">
                     <h4>Hızlı Linkler</h4>
                     <ul>
@@ -1848,7 +1609,6 @@
                         <li><a href="#downloads">İndirme</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-col">
                     <h4>Kaynaklar</h4>
                     <ul>
@@ -1857,7 +1617,6 @@
                         <li><a href="#">Kullanım Koşulları</a></li>
                     </ul>
                 </div>
-
                 <div class="footer-col">
                     <h4>Sosyal Medya</h4>
                     <div style="display:flex;gap:14px;flex-wrap:wrap;">
@@ -1869,7 +1628,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="footer-bottom">
                 <p>&copy; 2024 EMEM GROUP. Tüm hakları saklıdır.</p>
                 <p style="color:var(--text-gray);font-size:0.75rem;">
@@ -1880,9 +1638,7 @@
         </div>
     </footer>
 
-    <!-- ================================================================
-    JAVASCRIPT
-    ================================================================ -->
+    <!-- JAVASCRIPT -->
     <script>
         // Hamburger Menu
         const hamburger = document.getElementById('hamburger');
