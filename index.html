@@ -1315,6 +1315,77 @@
         }
 
         /* ================================================================
+           BLOG - YENİ EKLENDİ
+        ================================================================ */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .blog-card {
+            background: var(--glass);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius);
+            padding: 24px;
+            transition: var(--transition);
+            backdrop-filter: blur(10px);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(108, 99, 255, 0.08);
+        }
+
+        .blog-card .tag {
+            display: inline-block;
+            background: rgba(108, 99, 255, 0.08);
+            color: #A78BFA;
+            font-size: 0.6rem;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .blog-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .blog-card .ozet {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .blog-card .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        .blog-card .footer .tarih {
+            color: var(--text-gray);
+            font-size: 0.7rem;
+        }
+
+        .blog-card .footer .btn-oku {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .blog-card .footer .btn-oku:hover {
+            color: var(--primary);
+        }
+
+        /* ================================================================
            FOOTER
         ================================================================ */
         .footer {
@@ -1455,6 +1526,7 @@
             .chat-btn { width: 50px; height: 50px; font-size: 1.4rem; bottom: 80px; right: 20px; }
             .chat-window { width: calc(100% - 40px); right: 20px; bottom: 140px; }
             .team-grid { max-width: 100%; }
+            .blog-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 480px) {
@@ -1464,6 +1536,7 @@
             .services-grid { grid-template-columns: 1fr; }
             .projects-grid { grid-template-columns: 1fr; }
             .stat-card .number { font-size: 2.2rem; }
+            .blog-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -1512,6 +1585,7 @@
                 <li><a href="#ekip">Ekibimiz</a></li>
                 <li><a href="#projeler">Projeler</a></li>
                 <li><a href="#downloads">İndirme</a></li>
+                <li><a href="#blog">Blog</a></li>
                 <li><a href="#iletisim" class="btn-nav"><i class="fas fa-rocket"></i> İletişim</a></li>
             </ul>
             <button class="hamburger" id="hamburger" aria-label="Menu">
@@ -1681,6 +1755,22 @@
         </div>
     </section>
 
+    <!-- ================================================================
+    BLOG - YENİ BÖLÜM (SUPABASE'DEN DİNAMİK)
+    ================================================================ -->
+    <section id="blog" style="background: rgba(255,255,255,0.01);">
+        <div class="container">
+            <div class="text-center">
+                <span class="section-tag">📝 Blog</span>
+                <h2 class="section-title">Son <span class="highlight">Yazılar</span></h2>
+                <p class="section-subtitle mx-auto">EMEM GROUP'dan güncel haberler ve yazılar.</p>
+            </div>
+            <div class="blog-grid" id="blogListesi" style="margin-top:48px;">
+                <p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">⏳ Blog yazıları yükleniyor...</p>
+            </div>
+        </div>
+    </section>
+
     <!-- MÜŞTERİ YORUMLARI -->
     <section id="yorumlar">
         <div class="container">
@@ -1841,6 +1931,7 @@
                         <li><a href="#ekip">Ekibimiz</a></li>
                         <li><a href="#projeler">Projeler</a></li>
                         <li><a href="#downloads">İndirme</a></li>
+                        <li><a href="#blog">Blog</a></li>
                     </ul>
                 </div>
                 <div class="footer-col">
@@ -2004,8 +2095,70 @@
             }
         }
 
-        // Sayfa yüklendiğinde projeleri çek
-        document.addEventListener('DOMContentLoaded', projeleriGetir);
+        // ================================================================
+        // SUPABASE BAĞLANTISI - BLOG YAZILARINI ÇEK
+        // ================================================================
+        async function bloglariGetir() {
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/blog?select=*&order=olusturma_tarihi.desc&limit=3`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP hatası: ${response.status}`);
+                }
+                
+                const yazilar = await response.json();
+                const container = document.getElementById('blogListesi');
+                
+                if (yazilar.length === 0) {
+                    container.innerHTML = '<p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">📭 Henüz blog yazısı yok.</p>';
+                    return;
+                }
+
+                container.innerHTML = yazilar.map(y => `
+                    <div class="blog-card">
+                        <span class="tag">${y.kategori || 'Genel'}</span>
+                        <h3>${y.baslik}</h3>
+                        <p class="ozet">${y.ozet || y.icerik.substring(0, 120) + '...'}</p>
+                        <div class="footer">
+                            <span class="tarih">📅 ${new Date(y.olusturma_tarihi).toLocaleDateString('tr-TR')}</span>
+                            <a href="#" onclick="blogDetay('${y.id}'); return false;" class="btn-oku">Devamını Oku →</a>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (hata) {
+                console.error('Blog yüklenirken hata:', hata);
+                document.getElementById('blogListesi').innerHTML = '<p style="color: #f87171; text-align: center; grid-column: 1 / -1;">❌ Blog yazıları yüklenemedi.</p>';
+            }
+        }
+
+        // Blog detay (basit popup)
+        function blogDetay(id) {
+            fetch(`${SUPABASE_URL}/rest/v1/blog?id=eq.${id}&select=*`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.length === 0) return;
+                const y = data[0];
+                alert(`📌 ${y.baslik}\n\n${y.icerik || 'İçerik bulunamadı.'}\n\n📅 ${new Date(y.olusturma_tarihi).toLocaleDateString('tr-TR')} · 👤 ${y.yazar || 'EMEM GROUP'}`);
+            })
+            .catch(() => alert('❌ Blog detayı yüklenirken hata oluştu.'));
+        }
+
+        // Sayfa yüklendiğinde projeleri ve blogları çek
+        document.addEventListener('DOMContentLoaded', () => {
+            projeleriGetir();
+            bloglariGetir();
+        });
 
         // ================================================================
         // YAPAY ZEKA ASİSTANI - SOHBET BOTU

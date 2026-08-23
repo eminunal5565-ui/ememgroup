@@ -47,12 +47,21 @@
         .proje-kart .actions .sil:hover { background: rgba(248,113,113,0.15); }
         .cikis-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); color: #fff; padding: 8px 20px; border-radius: 30px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
         .cikis-btn:hover { background: rgba(255,255,255,0.12); }
+        /* Blog Bölümü Stilleri */
+        .blog-kart { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); border-radius: 16px; padding: 20px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .blog-kart .info h3 { font-size: 1.1rem; font-weight: 600; }
+        .blog-kart .info p { color: rgba(255,255,255,0.4); font-size: 0.85rem; }
+        .blog-kart .info .meta { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: 4px; }
+        .blog-kart .actions button { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06); color: #fff; padding: 6px 14px; border-radius: 30px; cursor: pointer; margin-left: 6px; transition: 0.3s; font-size: 0.75rem; }
+        .blog-kart .actions button:hover { background: rgba(255,255,255,0.12); }
+        .blog-kart .actions .sil { color: #f87171; }
+        .blog-kart .actions .sil:hover { background: rgba(248,113,113,0.15); }
     </style>
 </head>
 <body>
 <div class="container" id="app">
     <h1>📋 Admin Paneli</h1>
-    <p class="subtitle">EMEM GROUP projelerini yönet</p>
+    <p class="subtitle">EMEM GROUP projelerini ve blog yazılarını yönet</p>
 
     <!-- GİRİŞ EKRANI -->
     <div id="loginBox" class="login-box">
@@ -63,6 +72,7 @@
 
     <!-- YÖNETİM PANELİ -->
     <div id="panel" class="panel">
+        <!-- PROJE YÖNETİMİ -->
         <div class="panel-header">
             <div><span style="color: rgba(255,255,255,0.4);">Toplam:</span> <span id="projeSayisi">0</span> proje</div>
             <div>
@@ -71,6 +81,19 @@
             </div>
         </div>
         <div id="projeListesiAdmin"></div>
+
+        <!-- ============================================================
+             BLOG YÖNETİMİ
+        ============================================================ -->
+        <div style="margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 30px;">
+            <div class="panel-header">
+                <h2 style="font-size: 1.3rem;">📝 Blog Yönetimi</h2>
+                <button class="btn-ekle" onclick="yeniBlogFormu()"><i class="fas fa-plus"></i> Yeni Yazı</button>
+            </div>
+            <div id="blogListesiAdmin">
+                <p style="color: rgba(255,255,255,0.3); text-align: center; padding: 20px 0;">⏳ Blog yazıları yükleniyor...</p>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -92,6 +115,7 @@
             document.getElementById('loginBox').style.display = 'none';
             document.getElementById('panel').style.display = 'block';
             projeleriListele();
+            bloglariListele();
         } else {
             document.getElementById('hataMesaji').style.display = 'block';
         }
@@ -255,6 +279,159 @@
             if (!res.ok) throw new Error(`HTTP ${res.status}`);
             alert('✅ Proje güncellendi.');
             projeleriListele();
+        })
+        .catch(hata => {
+            alert('❌ Güncelleme hatası: ' + hata.message);
+            console.error(hata);
+        });
+    }
+
+    // ================================================================
+    // BLOG İŞLEMLERİ
+    // ================================================================
+
+    // Blog yazılarını listele
+    async function bloglariListele() {
+        try {
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/blog?select=*&order=olusturma_tarihi.desc`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Hatası: ${response.status}`);
+            }
+            
+            const yazilar = await response.json();
+            const container = document.getElementById('blogListesiAdmin');
+            
+            if (yazilar.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.3); text-align: center; padding: 20px 0;">📭 Henüz blog yazısı yok. İlk yazını ekle! 🚀</p>';
+                return;
+            }
+
+            container.innerHTML = yazilar.map(y => `
+                <div class="blog-kart">
+                    <div class="info">
+                        <h3>${y.baslik}</h3>
+                        <p style="font-size:0.85rem; color: rgba(255,255,255,0.6);">${y.ozet || (y.icerik ? y.icerik.substring(0, 80) + '...' : '')}</p>
+                        <div class="meta">📂 ${y.kategori || 'Genel'} · 📅 ${new Date(y.olusturma_tarihi).toLocaleDateString('tr-TR')}</div>
+                    </div>
+                    <div class="actions">
+                        <button onclick="blogDuzenle('${y.id}')"><i class="fas fa-edit"></i> Düzenle</button>
+                        <button class="sil" onclick="blogSil('${y.id}')"><i class="fas fa-trash"></i> Sil</button>
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch (hata) {
+            console.error('Blog listeleme hatası:', hata);
+            document.getElementById('blogListesiAdmin').innerHTML = `<p style="color: #f87171;">❌ Blog yazıları yüklenemedi: ${hata.message}</p>`;
+        }
+    }
+
+    // Yeni blog yazısı ekle
+    function yeniBlogFormu() {
+        const baslik = prompt('📌 Blog başlığı:');
+        if (!baslik) return;
+        
+        const ozet = prompt('📝 Kısa özet:');
+        const icerik = prompt('📄 İçerik (HTML etiketleri kullanabilirsin):');
+        const kategori = prompt('📂 Kategori (örn: Haber, Duyuru, Teknik):', 'Haber');
+        const etiketler = prompt('🏷️ Etiketler (virgülle ayır):', 'EMEM GROUP');
+        
+        const etiketArray = etiketler ? etiketler.split(',').map(e => e.trim()) : [];
+
+        fetch(`${SUPABASE_URL}/rest/v1/blog`, {
+            method: 'POST',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify({
+                baslik: baslik,
+                icerik: icerik || '',
+                ozet: ozet || '',
+                kategori: kategori || 'Genel',
+                etiketler: etiketArray,
+                yazar: 'EMEM GROUP'
+            })
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.text().then(text => { throw new Error(`HTTP ${res.status}: ${text}`); });
+            }
+            return res.json();
+        })
+        .then(() => {
+            alert('✅ Blog yazısı başarıyla eklendi!');
+            bloglariListele();
+        })
+        .catch(hata => {
+            alert('❌ Blog eklenirken hata oluştu: ' + hata.message);
+            console.error(hata);
+        });
+    }
+
+    // Blog yazısı sil
+    function blogSil(id) {
+        if (!confirm('⚠️ Bu blog yazısını silmek istediğine emin misin?')) return;
+        
+        fetch(`${SUPABASE_URL}/rest/v1/blog?id=eq.${id}`, {
+            method: 'DELETE',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+            }
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            alert('✅ Blog yazısı silindi.');
+            bloglariListele();
+        })
+        .catch(hata => {
+            alert('❌ Silme hatası: ' + hata.message);
+            console.error(hata);
+        });
+    }
+
+    // Blog yazısı düzenle
+    function blogDuzenle(id) {
+        const yeniBaslik = prompt('📌 Yeni başlık:');
+        if (yeniBaslik === null) return;
+        const yeniOzet = prompt('📝 Yeni özet:');
+        const yeniIcerik = prompt('📄 Yeni içerik:');
+        const yeniKategori = prompt('📂 Yeni kategori:', 'Haber');
+
+        const guncelVeri = {};
+        if (yeniBaslik !== '') guncelVeri.baslik = yeniBaslik;
+        if (yeniOzet !== null) guncelVeri.ozet = yeniOzet;
+        if (yeniIcerik !== null) guncelVeri.icerik = yeniIcerik;
+        if (yeniKategori !== null) guncelVeri.kategori = yeniKategori;
+        guncelVeri.guncelleme_tarihi = new Date().toISOString();
+
+        if (Object.keys(guncelVeri).length === 0) {
+            alert('Hiçbir değişiklik yapılmadı.');
+            return;
+        }
+
+        fetch(`${SUPABASE_URL}/rest/v1/blog?id=eq.${id}`, {
+            method: 'PATCH',
+            headers: {
+                'apikey': SUPABASE_ANON_KEY,
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(guncelVeri)
+        })
+        .then(res => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            alert('✅ Blog yazısı güncellendi.');
+            bloglariListele();
         })
         .catch(hata => {
             alert('❌ Güncelleme hatası: ' + hata.message);
