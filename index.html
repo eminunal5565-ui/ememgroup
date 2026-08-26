@@ -7,9 +7,8 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
-    <!-- Supabase Auth için CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
 
     <style>
         /* ================================================================
@@ -38,6 +37,525 @@
             --border-glass: rgba(255, 255, 255, 0.06);
         }
 
+        /* LIGHT MODE */
+        body.light-mode {
+            --bg-dark: #f0f0f5;
+            --text-white: #1a1a2e;
+            --text-gray: rgba(0, 0, 0, 0.6);
+            --text-light: rgba(0, 0, 0, 0.8);
+            --glass: rgba(0, 0, 0, 0.03);
+            --border-glass: rgba(0, 0, 0, 0.06);
+            --shadow: 0 30px 80px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .navbar {
+            background: rgba(240, 240, 245, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+        body.light-mode .navbar.scrolled {
+            background: rgba(240, 240, 245, 0.95);
+        }
+        body.light-mode .code-window {
+            background: rgba(0, 0, 0, 0.03);
+        }
+        body.light-mode .auth-modal .auth-box {
+            background: #ffffff;
+            color: #1a1a2e;
+        }
+        body.light-mode .auth-modal .auth-box input {
+            color: #1a1a2e;
+            background: rgba(0, 0, 0, 0.03);
+        }
+        body.light-mode .chat-window {
+            background: rgba(255, 255, 255, 0.95);
+        }
+        body.light-mode .chat-msg.bot .bubble {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1a1a2e;
+        }
+        body.light-mode .chat-footer input {
+            color: #1a1a2e;
+        }
+
+        /* ================================================================
+           SCROLLBAR
+        ================================================================ */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+        }
+
+        ::selection {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        /* ================================================================
+           PROGRESS BAR
+        ================================================================ */
+        #progressBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            z-index: 9998;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        /* ================================================================
+           BACK TO TOP
+        ================================================================ */
+        #backToTop {
+            position: fixed;
+            bottom: 170px;
+            right: 30px;
+            z-index: 998;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.3s ease;
+            box-shadow: 0 8px 35px rgba(108, 99, 255, 0.3);
+        }
+
+        #backToTop.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        #backToTop:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 45px rgba(108, 99, 255, 0.4);
+        }
+
+        /* ================================================================
+           TOAST
+        ================================================================ */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 30px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            animation: slideIn 0.4s ease;
+            backdrop-filter: blur(20px);
+            max-width: 380px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast.success {
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            color: #34D399;
+        }
+        .toast.error {
+            background: rgba(248, 113, 113, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            color: #f87171;
+        }
+        .toast.info {
+            background: rgba(108, 99, 255, 0.15);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+            color: #A78BFA;
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ================================================================
+           REVEAL ANIMATION (Sıralı Element Gelme)
+        ================================================================ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal.delay-1 {
+            transition-delay: 0.08s;
+        }
+        .reveal.delay-2 {
+            transition-delay: 0.16s;
+        }
+        .reveal.delay-3 {
+            transition-delay: 0.24s;
+        }
+        .reveal.delay-4 {
+            transition-delay: 0.32s;
+        }
+        .reveal.delay-5 {
+            transition-delay: 0.40s;
+        }
+        .reveal.delay-6 {
+            transition-delay: 0.48s;
+        }
+
+        /* ================================================================
+           GLOW CARD (Hover Işık Parlaklığı)
+        ================================================================ */
+        .glow-card {
+            position: relative;
+            transition: all 0.4s ease;
+            z-index: 1;
+        }
+
+        .glow-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--primary));
+            background-size: 300% 300%;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+            animation: glowMove 3s ease infinite;
+        }
+
+        .glow-card:hover::before {
+            opacity: 1;
+        }
+
+        .glow-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 60px rgba(108, 99, 255, 0.15);
+        }
+
+        @keyframes glowMove {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* ================================================================
+           3D FLIP CARD
+        ================================================================ */
+        .flip-card {
+            perspective: 800px;
+            height: 100%;
+            min-height: 280px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            backface-visibility: hidden;
+            border-radius: var(--radius);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .flip-card-front {
+            background: var(--glass);
+            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(10px);
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            background: rgba(108, 99, 255, 0.08);
+            border: 1px solid rgba(108, 99, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .flip-card-back .icon {
+            font-size: 2.6rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .flip-card-back h3 {
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        .flip-card-back p {
+            color: var(--text-gray);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* ================================================================
+           WAVY TEXT (Dalgalı Metin)
+        ================================================================ */
+        .wavy-text span {
+            display: inline-block;
+            animation: wave 2s ease-in-out infinite;
+            animation-delay: calc(var(--i, 0) * 0.06s);
+        }
+
+        @keyframes wave {
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ================================================================
+           TICKER (Kayan Duyuru Bandı)
+        ================================================================ */
+        .ticker-wrap {
+            overflow: hidden;
+            background: rgba(108, 99, 255, 0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding: 10px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .ticker {
+            display: flex;
+            gap: 60px;
+            animation: tickerScroll 30s linear infinite;
+            white-space: nowrap;
+            width: max-content;
+        }
+
+        .ticker-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-gray);
+            font-size: 0.85rem;
+        }
+
+        .ticker-item .badge {
+            background: var(--primary);
+            color: #fff;
+            padding: 2px 14px;
+            border-radius: 30px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .ticker-item .badge.yeni {
+            background: #34D399;
+        }
+        .ticker-item .badge.duyuru {
+            background: #FBBF24;
+            color: #1a1a2e;
+        }
+        .ticker-item .badge.guncelleme {
+            background: #60A5FA;
+        }
+
+        @keyframes tickerScroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* ================================================================
+           MOUSE IŞIK TAKİBİ
+        ================================================================ */
+        .light-follower {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(108, 99, 255, 0.06), transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            transition: left 0.12s ease-out, top 0.12s ease-out;
+            will-change: transform;
+        }
+
+        /* ================================================================
+           PARALLAX ELEMENT
+        ================================================================ */
+        .parallax-element {
+            will-change: transform;
+            transition: transform 0.05s linear;
+        }
+
+        /* ================================================================
+           THEME TOGGLE
+        ================================================================ */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-gray);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 4px 8px;
+        }
+        .theme-toggle:hover {
+            color: var(--text-white);
+            transform: rotate(30deg);
+        }
+
+        /* ================================================================
+           NAVBAR AKTİF LINK
+        ================================================================ */
+        .nav-links a.active {
+            color: var(--text-white);
+        }
+        .nav-links a.active::after {
+            width: 100%;
+        }
+
+        /* ================================================================
+           3D CARD HOVER (Mevcut)
+        ================================================================ */
+        .service-card,
+        .project-card,
+        .team-card,
+        .testimonial-card,
+        .download-card,
+        .blog-card,
+        .stat-card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            perspective: 1000px;
+        }
+
+        .service-card:hover,
+        .project-card:hover,
+        .team-card:hover,
+        .testimonial-card:hover,
+        .download-card:hover,
+        .blog-card:hover,
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 20px 60px rgba(108, 99, 255, 0.1);
+        }
+
+        .service-card::after,
+        .project-card::after {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.4s ease;
+        }
+
+        .service-card:hover::after,
+        .project-card:hover::after {
+            opacity: 0.15;
+        }
+
+        /* ================================================================
+           RESPONSIVE EKLEMELER
+        ================================================================ */
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 80px;
+                right: 16px;
+                left: 16px;
+            }
+            .toast {
+                max-width: 100%;
+                font-size: 0.8rem;
+                padding: 12px 18px;
+            }
+            #backToTop {
+                bottom: 140px;
+                right: 20px;
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+            .light-follower {
+                display: none;
+            }
+            .ticker-item {
+                font-size: 0.75rem;
+            }
+            .flip-card {
+                min-height: 220px;
+            }
+            .flip-card-inner,
+            .flip-card-front,
+            .flip-card-back {
+                min-height: 220px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #backToTop {
+                bottom: 120px;
+                right: 16px;
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ================================================================
+           ANA STİLLER (MEVCUT)
+        ================================================================ */
         html {
             scroll-behavior: smooth;
         }
@@ -51,16 +569,12 @@
             line-height: 1.6;
         }
 
-        /* ================================================================
-           ARKA PLAN - 1.png
-        ================================================================ */
         .bg-image {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('1.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -106,13 +620,17 @@
         }
 
         @keyframes pulseOrb {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 1; }
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
         }
 
-        /* ================================================================
-           GENEL
-        ================================================================ */
         .container {
             position: relative;
             z-index: 2;
@@ -165,15 +683,12 @@
         .text-center {
             text-align: center;
         }
-
         .mx-auto {
             margin-left: auto;
             margin-right: auto;
         }
 
-        /* ================================================================
-           NAVBAR
-        ================================================================ */
+        /* NAVBAR */
         .navbar {
             position: fixed;
             top: 0;
@@ -262,7 +777,6 @@
         .nav-links a:hover {
             color: var(--text-white);
         }
-
         .nav-links a:hover::after {
             width: 100%;
         }
@@ -281,12 +795,10 @@
         .nav-links .btn-nav::after {
             display: none;
         }
-
         .nav-links .btn-nav:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 35px rgba(108, 99, 255, 0.35);
         }
-
         .nav-links .btn-nav i {
             margin-right: 8px;
         }
@@ -309,9 +821,17 @@
             border-radius: 2px;
         }
 
-        /* ================================================================
-           AUTH BUTONLARI (NAVBAR İÇİN)
-        ================================================================ */
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        /* AUTH BUTONLARI */
         .auth-buttons {
             display: flex;
             gap: 10px;
@@ -334,7 +854,6 @@
             color: var(--text-white);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         .auth-buttons .btn-auth.btn-login:hover {
             background: rgba(255, 255, 255, 0.12);
         }
@@ -344,7 +863,6 @@
             color: #fff;
             box-shadow: 0 4px 20px rgba(108, 99, 255, 0.2);
         }
-
         .auth-buttons .btn-auth.btn-register:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 30px rgba(108, 99, 255, 0.3);
@@ -355,7 +873,6 @@
             color: #FF6B6B;
             border: 1px solid rgba(255, 107, 107, 0.1);
         }
-
         .auth-buttons .btn-auth.btn-logout:hover {
             background: rgba(255, 107, 107, 0.2);
         }
@@ -365,14 +882,11 @@
             font-size: 0.8rem;
             font-weight: 500;
         }
-
         .auth-buttons .user-info strong {
             color: var(--text-white);
         }
 
-        /* ================================================================
-           AUTH MODAL
-        ================================================================ */
+        /* AUTH MODAL */
         .auth-modal {
             position: fixed;
             top: 0;
@@ -413,7 +927,6 @@
             cursor: pointer;
             transition: 0.3s ease;
         }
-
         .auth-modal .auth-box .close-auth:hover {
             color: #fff;
             transform: rotate(90deg);
@@ -438,7 +951,6 @@
             cursor: pointer;
             text-decoration: none;
         }
-
         .auth-modal .auth-box .sub a:hover {
             text-decoration: underline;
         }
@@ -459,6 +971,7 @@
         .auth-modal .auth-box input:focus {
             outline: none;
             border-color: rgba(108, 99, 255, 0.3);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.05);
         }
 
         .auth-modal .auth-box .btn-submit {
@@ -555,9 +1068,7 @@
             }
         }
 
-        /* ================================================================
-           HERO
-        ================================================================ */
+        /* HERO */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -597,8 +1108,15 @@
         }
 
         @keyframes pulseDot {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(0.8); }
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
         }
 
         .hero-badge strong {
@@ -650,6 +1168,22 @@
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 25px rgba(108, 99, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.15), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .btn-primary:hover::after {
+            opacity: 1;
         }
 
         .btn-primary:hover {
@@ -670,6 +1204,22 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.05), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .btn-secondary:hover::after {
+            opacity: 1;
         }
 
         .btn-secondary:hover {
@@ -723,8 +1273,15 @@
         }
 
         @keyframes pulseRing {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.6;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
         }
 
         .code-window {
@@ -779,7 +1336,7 @@
         .code-window .code-body .line .s { color: #34D399; }
         .code-window .code-body .line .f { color: #FBBF24; }
         .code-window .code-body .line .str { color: #F472B6; }
-        .code-window .code-body .line .cmt { color: rgba(255,255,255,0.15); }
+        .code-window .code-body .line .cmt { color: rgba(255, 255, 255, 0.15); }
 
         .typing-cursor {
             display: inline-block;
@@ -791,13 +1348,16 @@
         }
 
         @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0;
+            }
         }
 
-        /* ================================================================
-           HİZMETLER
-        ================================================================ */
+        /* HİZMETLER */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -832,12 +1392,6 @@
             opacity: 1;
         }
 
-        .service-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(108, 99, 255, 0.15);
-            background: rgba(255, 255, 255, 0.05);
-        }
-
         .service-card .icon {
             font-size: 2.6rem;
             display: block;
@@ -856,9 +1410,7 @@
             line-height: 1.6;
         }
 
-        /* ================================================================
-           EKİP
-        ================================================================ */
+        /* EKİP */
         .team-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -876,12 +1428,6 @@
             transition: var(--transition);
             backdrop-filter: blur(10px);
             position: relative;
-        }
-
-        .team-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(108, 99, 255, 0.12);
-            background: rgba(255, 255, 255, 0.04);
         }
 
         .team-card .avatar {
@@ -940,9 +1486,7 @@
             border: 1px solid rgba(108, 99, 255, 0.04);
         }
 
-        /* ================================================================
-           PROJELER - SUPABASE İLE DİNAMİK
-        ================================================================ */
+        /* PROJELER */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -956,12 +1500,7 @@
             padding: 32px 28px;
             transition: var(--transition);
             backdrop-filter: blur(10px);
-        }
-
-        .project-card:hover {
-            transform: translateY(-6px);
-            border-color: rgba(108, 99, 255, 0.12);
-            background: rgba(255, 255, 255, 0.04);
+            position: relative;
         }
 
         .project-card .icon {
@@ -1019,9 +1558,7 @@
             border-color: rgba(108, 99, 255, 0.15);
         }
 
-        /* ================================================================
-           BAŞARI SAYAÇLARI
-        ================================================================ */
+        /* BAŞARI SAYAÇLARI */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1036,11 +1573,6 @@
             text-align: center;
             backdrop-filter: blur(10px);
             transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(108, 99, 255, 0.08);
         }
 
         .stat-card .number {
@@ -1061,9 +1593,7 @@
             font-weight: 400;
         }
 
-        /* ================================================================
-           MÜŞTERİ YORUMLARI
-        ================================================================ */
+        /* MÜŞTERİ YORUMLARI */
         .testimonials-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -1077,11 +1607,6 @@
             padding: 32px 28px;
             backdrop-filter: blur(10px);
             transition: var(--transition);
-        }
-
-        .testimonial-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(108, 99, 255, 0.08);
         }
 
         .testimonial-card .stars {
@@ -1108,9 +1633,7 @@
             color: var(--text-white);
         }
 
-        /* ================================================================
-           TEKNOLOJİ
-        ================================================================ */
+        /* TEKNOLOJİ */
         .tech-grid {
             display: flex;
             flex-wrap: wrap;
@@ -1135,9 +1658,7 @@
             transform: translateY(-3px);
         }
 
-        /* ================================================================
-           İNDİRME MERKEZİ
-        ================================================================ */
+        /* İNDİRME MERKEZİ */
         .download-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1152,11 +1673,6 @@
             text-align: center;
             transition: var(--transition);
             backdrop-filter: blur(10px);
-        }
-
-        .download-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(108, 99, 255, 0.1);
         }
 
         .download-card .icon {
@@ -1203,9 +1719,7 @@
             border-color: rgba(108, 99, 255, 0.15);
         }
 
-        /* ================================================================
-           İLETİŞİM - FORMPREE
-        ================================================================ */
+        /* İLETİŞİM */
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1268,6 +1782,7 @@
             outline: none;
             border-color: rgba(108, 99, 255, 0.25);
             background: rgba(255, 255, 255, 0.04);
+            box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.05);
         }
 
         .contact-form textarea {
@@ -1280,9 +1795,7 @@
             justify-content: center;
         }
 
-        /* ================================================================
-           WHATSAPP BUTON
-        ================================================================ */
+        /* WHATSAPP BUTON */
         .whatsapp-float {
             position: fixed;
             bottom: 30px;
@@ -1307,9 +1820,7 @@
             box-shadow: 0 12px 45px rgba(37, 211, 102, 0.45);
         }
 
-        /* ================================================================
-           YAPAY ZEKA ASİSTANI - SOHBET BOTU
-        ================================================================ */
+        /* CHAT BOT */
         .chat-btn {
             position: fixed;
             bottom: 100px;
@@ -1350,7 +1861,6 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
-            transition: 0.3s ease;
         }
 
         .chat-window.open {
@@ -1421,8 +1931,14 @@
         }
 
         @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .chat-msg .avatar {
@@ -1543,8 +2059,16 @@
         }
 
         @keyframes typing {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.2; }
-            30% { transform: translateY(-8px); opacity: 1; }
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.2;
+            }
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1563,9 +2087,7 @@
             }
         }
 
-        /* ================================================================
-           BLOG
-        ================================================================ */
+        /* BLOG */
         .blog-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1579,11 +2101,6 @@
             padding: 24px;
             transition: var(--transition);
             backdrop-filter: blur(10px);
-        }
-
-        .blog-card:hover {
-            transform: translateY(-4px);
-            border-color: rgba(108, 99, 255, 0.08);
         }
 
         .blog-card .tag {
@@ -1615,7 +2132,7 @@
             align-items: center;
             margin-top: 12px;
             padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .blog-card .footer .tarih {
@@ -1634,9 +2151,7 @@
             color: var(--primary);
         }
 
-        /* ================================================================
-           FOOTER
-        ================================================================ */
+        /* FOOTER */
         .footer {
             border-top: 1px solid rgba(255, 255, 255, 0.03);
             padding: 60px 0 24px;
@@ -1724,24 +2239,61 @@
             color: var(--text-white);
         }
 
-        /* ================================================================
-           RESPONSIVE
-        ================================================================ */
+        /* RESPONSIVE */
         @media (max-width: 992px) {
-            .hero .container { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-            .hero-content p { margin: 0 auto 32px; }
-            .hero-buttons { justify-content: center; }
-            .hero-stats { justify-content: center; }
-            .hero-visual .glow-ring { display: none; }
-            .services-grid { grid-template-columns: repeat(2, 1fr); }
-            .team-grid { grid-template-columns: 1fr; max-width: 450px; }
-            .projects-grid { grid-template-columns: 1fr; }
-            .testimonials-grid { grid-template-columns: 1fr 1fr; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .download-grid { grid-template-columns: repeat(2, 1fr); }
-            .contact-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
-            .hero-content h1 { font-size: 3rem; }
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 40px;
+            }
+            .hero-content p {
+                margin: 0 auto 32px;
+            }
+            .hero-buttons {
+                justify-content: center;
+            }
+            .hero-stats {
+                justify-content: center;
+            }
+            .hero-visual .glow-ring {
+                display: none;
+            }
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .team-grid {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+            }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            .testimonials-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .download-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .hero-content h1 {
+                font-size: 3rem;
+            }
+            .flip-card {
+                min-height: 200px;
+            }
+            .flip-card-inner,
+            .flip-card-front,
+            .flip-card-back {
+                min-height: 200px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1758,701 +2310,1076 @@
                 gap: 14px;
                 border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             }
-            .nav-links.open { display: flex; }
-            .hamburger { display: flex; }
-            .hero-content h1 { font-size: 2.4rem; }
-            .section-title { font-size: 2rem; }
-            .section-subtitle { font-size: 0.95rem; }
-            .services-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
-            .testimonials-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .download-grid { grid-template-columns: 1fr 1fr; }
-            .footer-grid { grid-template-columns: 1fr; text-align: center; }
-            .footer-brand p { margin: 0 auto; }
-            .footer-bottom { flex-direction: column; text-align: center; }
-            .hero-stats { flex-direction: column; gap: 16px; align-items: center; }
-            .whatsapp-float { width: 50px; height: 50px; font-size: 1.4rem; bottom: 20px; right: 20px; }
-            .chat-btn { width: 50px; height: 50px; font-size: 1.4rem; bottom: 80px; right: 20px; }
-            .chat-window { width: calc(100% - 40px); right: 20px; bottom: 140px; }
-            .team-grid { max-width: 100%; }
-            .blog-grid { grid-template-columns: 1fr; }
-            .auth-buttons .btn-auth { font-size: 0.65rem; padding: 4px 10px; }
-            .auth-buttons .user-info { font-size: 0.65rem; }
+            .nav-links.open {
+                display: flex;
+            }
+            .hamburger {
+                display: flex;
+            }
+            .hero-content h1 {
+                font-size: 2.4rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .section-subtitle {
+                font-size: 0.95rem;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .download-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .footer-brand p {
+                margin: 0 auto;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero-stats {
+                flex-direction: column;
+                gap: 16px;
+                align-items: center;
+            }
+            .whatsapp-float {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+                bottom: 20px;
+                right: 20px;
+            }
+            .chat-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+                bottom: 80px;
+                right: 20px;
+            }
+            .chat-window {
+                width: calc(100% - 40px);
+                right: 20px;
+                bottom: 140px;
+            }
+            .team-grid {
+                max-width: 100%;
+            }
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+            .auth-buttons .btn-auth {
+                font-size: 0.65rem;
+                padding: 4px 10px;
+            }
+            .auth-buttons .user-info {
+                font-size: 0.65rem;
+            }
+            .flip-card {
+                min-height: 180px;
+            }
+            .flip-card-inner,
+            .flip-card-front,
+            .flip-card-back {
+                min-height: 180px;
+            }
         }
 
         @media (max-width: 480px) {
-            .hero-content h1 { font-size: 1.8rem; }
-            .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .download-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .services-grid { grid-template-columns: 1fr; }
-            .projects-grid { grid-template-columns: 1fr; }
-            .stat-card .number { font-size: 2.2rem; }
-            .blog-grid { grid-template-columns: 1fr; }
+            .hero-content h1 {
+                font-size: 1.8rem;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .download-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-card .number {
+                font-size: 2.2rem;
+            }
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- ARKA PLAN -->
+    <!-- ================================================================
+    MOUSE IŞIK TAKİBİ
+    ================================================================ -->
+    <div class="light-follower" id="lightFollower"></div>
+
+    <!-- ================================================================
+    PROGRESS BAR
+    ================================================================ -->
+    <div id="progressBar"></div>
+
+    <!-- ================================================================
+    TOAST CONTAINER
+    ================================================================ -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- ================================================================
+    BACK TO TOP
+    ================================================================ -->
+    <button id="backToTop" aria-label="Yukarı çık">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- ================================================================
+    TICKER - KAYAN DUYURU BANDI
+    ================================================================ -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <span class="ticker-item"><span class="badge yeni">YENİ</span> 🚀 Yapay Zeka Asistanı v2.0 yayında!</span>
+            <span class="ticker-item"><span class="badge duyuru">DUYURU</span> 📢 Siber Güvenlik Webinarı 15 Aralık'ta!</span>
+            <span class="ticker-item"><span class="badge guncelleme">GÜNCELLEME</span> ⚡ Excel Otomasyon Aracı güncellendi!</span>
+            <span class="ticker-item"><span class="badge yeni">YENİ</span> 🎯 2024 hedeflerimizi açıkladık!</span>
+            <span class="ticker-item"><span class="badge yeni">YENİ</span> 🚀 Yapay Zeka Asistanı v2.0 yayında!</span>
+            <span class="ticker-item"><span class="badge duyuru">DUYURU</span> 📢 Siber Güvenlik Webinarı 15 Aralık'ta!</span>
+            <span class="ticker-item"><span class="badge guncelleme">GÜNCELLEME</span> ⚡ Excel Otomasyon Aracı güncellendi!</span>
+            <span class="ticker-item"><span class="badge yeni">YENİ</span> 🎯 2024 hedeflerimizi açıkladık!</span>
+        </div>
+    </div>
+
+    <!-- ================================================================
+    ARKA PLAN
+    ================================================================ -->
     <div class="bg-image"></div>
     <div class="gradient-overlay"></div>
     <div class="glow-orb orb1"></div>
     <div class="glow-orb orb2"></div>
 
-    <!-- WHATSAPP BUTON -->
-    <a href="https://wa.me/905555555555?text=Merhaba%20EMEM%20GROUP%20ile%20iletişime%20geçmek%20istiyorum" 
-       class="whatsapp-float" 
-       target="_blank"
-       aria-label="WhatsApp ile iletişime geç">
-        <i class="fab fa-whatsapp"></i>
-    </a>
-
-    <!-- YAPAY ZEKA ASİSTANI - BUTON -->
-    <button class="chat-btn" id="chatBtn" aria-label="Yapay Zeka Asistanı">
-        🤖
-    </button>
-
-    <!-- YAPAY ZEKA ASİSTANI - PENCERE -->
-    <div class="chat-window" id="chatWindow">
-        <div class="chat-header">
-            <h3>🤖 EMEM AI <span class="status"></span></h3>
-            <button class="chat-close" id="chatClose">✕</button>
-        </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-footer">
-            <input type="text" id="chatInput" placeholder="Mesajını yaz..." />
-            <button id="chatSend"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-
     <!-- ================================================================
-    NAVBAR + AUTH BUTONLARI
+    WHATSAPP BUTON
     ================================================================ -->
-    <nav class="navbar" id="navbar">
-        <div class="container">
-            <a href="#" class="logo">
-                <span class="brand">EMEM</span><span class="dot">.</span><span class="suffix">group</span>
-            </a>
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#hizmetler">Hizmetler</a></li>
-                <li><a href="#ekip">Ekibimiz</a></li>
-                <li><a href="#projeler">Projeler</a></li>
-                <li><a href="#downloads">İndirme</a></li>
-                <li><a href="#blog">Blog</a></li>
-                <li><a href="#iletisim" class="btn-nav"><i class="fas fa-rocket"></i> İletişim</a></li>
-                <li>
-                    <div class="auth-buttons" id="authButtons">
-                        <!-- Giriş yapmamış kullanıcı -->
-                        <div id="notLoggedIn">
-                            <button class="btn-auth btn-login" onclick="openLogin()">Giriş Yap</button>
-                            <button class="btn-auth btn-register" onclick="openRegister()">Kayıt Ol</button>
-                        </div>
-                        <!-- Giriş yapmış kullanıcı -->
-                        <div id="loggedIn" style="display:none;">
-                            <span class="user-info">👋 <strong id="userName">Kullanıcı</strong></span>
-                            <button class="btn-auth btn-logout" onclick="handleLogout()">Çıkış Yap</button>
-                        </div>
+    <a href="https://wa.me/905555555555?text=Merhaba%20EMEM%20GROUP%20ile%20iletişime%20geçmek%20istiyorum"
+    class="whatsapp-float"
+    target="_blank"
+    aria-label="WhatsApp ile iletişime geç">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- ================================================================
+YAPAY ZEKA ASİSTANI
+================================================================ -->
+<button class="chat-btn" id="chatBtn" aria-label="Yapay Zeka Asistanı">
+    🤖
+</button>
+
+<div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+        <h3>🤖 EMEM AI <span class="status"></span></h3>
+        <button class="chat-close" id="chatClose">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-footer">
+        <input type="text" id="chatInput" placeholder="Mesajını yaz..." />
+        <button id="chatSend"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- ================================================================
+NAVBAR
+================================================================ -->
+<nav class="navbar" id="navbar">
+    <div class="container">
+        <a href="#" class="logo">
+            <span class="brand">EMEM</span><span class="dot">.</span><span class="suffix">group</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#hizmetler">Hizmetler</a></li>
+            <li><a href="#ekip">Ekibimiz</a></li>
+            <li><a href="#projeler">Projeler</a></li>
+            <li><a href="#downloads">İndirme</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#iletisim" class="btn-nav"><i class="fas fa-rocket"></i> İletişim</a></li>
+            <li>
+                <div class="auth-buttons" id="authButtons">
+                    <div id="notLoggedIn">
+                        <button class="btn-auth btn-login" onclick="openLogin()">Giriş Yap</button>
+                        <button class="btn-auth btn-register" onclick="openRegister()">Kayıt Ol</button>
                     </div>
-                </li>
-            </ul>
-            <button class="hamburger" id="hamburger" aria-label="Menu">
-                <span></span>
-                <span></span>
-                <span></span>
+                    <div id="loggedIn" style="display:none;">
+                        <span class="user-info">👋 <strong id="userName">Kullanıcı</strong></span>
+                        <button class="btn-auth btn-logout" onclick="handleLogout()">Çıkış Yap</button>
+                    </div>
+                </div>
+            </li>
+            <li>
+                <button class="theme-toggle" id="themeToggle" aria-label="Tema değiştir">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- ================================================================
+AUTH MODAL
+================================================================ -->
+<div class="auth-modal" id="authModal">
+    <div class="auth-box">
+        <button class="close-auth" id="closeAuth">✕</button>
+
+        <div id="loginForm">
+            <h2>👋 Hoş Geldin</h2>
+            <p class="sub">Hesabına giriş yap</p>
+            <input type="email" id="loginEmail" placeholder="E-posta adresiniz" />
+            <input type="password" id="loginPassword" placeholder="Şifreniz" />
+            <button class="btn-submit" onclick="handleLogin()">Giriş Yap</button>
+            <div id="loginError" class="auth-error"></div>
+            <div id="loginSuccess" class="auth-success"></div>
+            <div class="divider">veya</div>
+            <button class="google-btn" onclick="handleGoogleLogin()">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Google ile Giriş Yap
             </button>
+            <p class="sub" style="margin-top:16px;">
+                Hesabın yok mu? <a onclick="showRegister()">Kayıt Ol</a>
+            </p>
         </div>
-    </nav>
 
-    <!-- ================================================================
-    AUTH MODAL (Giriş/Kayıt Penceresi)
-    ================================================================ -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-box">
-            <button class="close-auth" id="closeAuth">✕</button>
+        <div id="registerForm" style="display:none;">
+            <h2>📝 Hesap Oluştur</h2>
+            <p class="sub">EMEM GROUP'a katıl</p>
+            <input type="text" id="registerName" placeholder="Adınız" />
+            <input type="email" id="registerEmail" placeholder="E-posta adresiniz" />
+            <input type="password" id="registerPassword" placeholder="Şifreniz (min 6 karakter)" />
+            <button class="btn-submit" onclick="handleRegister()">Kayıt Ol</button>
+            <div id="registerError" class="auth-error"></div>
+            <div id="registerSuccess" class="auth-success"></div>
+            <div class="divider">veya</div>
+            <button class="google-btn" onclick="handleGoogleLogin()">
+                <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                Google ile Kayıt Ol
+            </button>
+            <p class="sub" style="margin-top:16px;">
+                Zaten hesabın var mı? <a onclick="showLogin()">Giriş Yap</a>
+            </p>
+        </div>
+    </div>
+</div>
 
-            <!-- Giriş Formu -->
-            <div id="loginForm">
-                <h2>👋 Hoş Geldin</h2>
-                <p class="sub">Hesabına giriş yap</p>
-
-                <input type="email" id="loginEmail" placeholder="E-posta adresiniz" />
-                <input type="password" id="loginPassword" placeholder="Şifreniz" />
-
-                <button class="btn-submit" onclick="handleLogin()">Giriş Yap</button>
-
-                <div id="loginError" class="auth-error"></div>
-                <div id="loginSuccess" class="auth-success"></div>
-
-                <div class="divider">veya</div>
-
-                <button class="google-btn" onclick="handleGoogleLogin()">
-                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    Google ile Giriş Yap
-                </button>
-
-                <p class="sub" style="margin-top:16px;">
-                    Hesabın yok mu? <a onclick="showRegister()">Kayıt Ol</a>
-                </p>
+<!-- ================================================================
+HERO
+================================================================ -->
+<section class="hero" id="hero">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>Dijital dönüşümde <strong>lider</strong> ortağınız</span>
             </div>
-
-            <!-- Kayıt Formu -->
-            <div id="registerForm" style="display:none;">
-                <h2>📝 Hesap Oluştur</h2>
-                <p class="sub">EMEM GROUP'a katıl</p>
-
-                <input type="text" id="registerName" placeholder="Adınız" />
-                <input type="email" id="registerEmail" placeholder="E-posta adresiniz" />
-                <input type="password" id="registerPassword" placeholder="Şifreniz (min 6 karakter)" />
-
-                <button class="btn-submit" onclick="handleRegister()">Kayıt Ol</button>
-
-                <div id="registerError" class="auth-error"></div>
-                <div id="registerSuccess" class="auth-success"></div>
-
-                <div class="divider">veya</div>
-
-                <button class="google-btn" onclick="handleGoogleLogin()">
-                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    Google ile Kayıt Ol
-                </button>
-
-                <p class="sub" style="margin-top:16px;">
-                    Zaten hesabın var mı? <a onclick="showLogin()">Giriş Yap</a>
-                </p>
+            <h1>
+                Geleceği<br />
+                <span class="gradient-text wavy-text">
+                    <span style="--i:0">Y</span>
+                    <span style="--i:1">a</span>
+                    <span style="--i:2">z</span>
+                    <span style="--i:3">ı</span>
+                    <span style="--i:4">l</span>
+                    <span style="--i:5">ı</span>
+                    <span style="--i:6">m</span>
+                    <span style="--i:7">l</span>
+                    <span style="--i:8">a</span>
+                    <span style="--i:9"> </span>
+                    <span style="--i:10">İ</span>
+                    <span style="--i:11">n</span>
+                    <span style="--i:12">ş</span>
+                    <span style="--i:13">a</span>
+                    <span style="--i:14"> </span>
+                    <span style="--i:15">E</span>
+                    <span style="--i:16">d</span>
+                    <span style="--i:17">i</span>
+                    <span style="--i:18">y</span>
+                    <span style="--i:19">o</span>
+                    <span style="--i:20">r</span>
+                    <span style="--i:21">u</span>
+                    <span style="--i:22">z</span>
+                </span>
+            </h1>
+            <p>
+                EMEM GROUP olarak, siber güvenlik, otomasyon ve
+                uygulama geliştirme alanlarında uzman çözümlerle
+                işletmelerin dijital dönüşümüne liderlik ediyoruz.
+            </p>
+            <div class="hero-buttons">
+                <a href="#iletisim" class="btn-primary">
+                    <i class="fas fa-arrow-right"></i> Bize Ulaşın
+                </a>
+                <a href="#projeler" class="btn-secondary">
+                    <i class="fas fa-folder-open"></i> Projelerimiz
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <h3><span class="counter" data-target="20">0</span>+</h3>
+                    <p>Tamamlanan Proje</p>
+                </div>
+                <div class="stat">
+                    <h3><span class="counter" data-target="2">0</span></h3>
+                    <p>Uzman Ekip Üyesi</p>
+                </div>
+                <div class="stat">
+                    <h3><span class="counter" data-target="4.9">0</span>⭐</h3>
+                    <p>Müşteri Memnuniyeti</p>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual parallax-element" data-speed="0.05">
+            <div class="glow-ring"></div>
+            <div class="code-window">
+                <div class="code-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="title">EMEM_GROUP/core.py</span>
+                </div>
+                <div class="code-body">
+                    <div class="line"><span class="k">class</span> <span class="n">EMEMGroup</span>:</div>
+                    <div class="line" style="padding-left:16px;"><span class="k">def</span> <span class="f">__init__</span>(<span class="n">self</span>):</div>
+                    <div class="line" style="padding-left:32px;"><span class="n">self</span>.<span class="n">mission</span> = <span class="str">"Innovate & Build"</span></div>
+                    <div class="line" style="padding-left:32px;"><span class="n">self</span>.<span class="n">vision</span> = <span class="str">"Digital Leadership"</span></div>
+                    <div class="line" style="padding-left:16px;"><span class="k">def</span> <span class="f">develop</span>(<span class="n">self</span>, <span class="n">project</span>):</div>
+                    <div class="line" style="padding-left:32px;"><span class="k">return</span> <span class="str">"🚀 Excellence Delivered"</span></div>
+                    <div class="line"><span class="cmt"># EMEM GROUP ile geleceği inşa edin</span></div>
+                    <div class="line"><span class="n">future</span> = <span class="n">EMEMGroup</span>()<span class="typing-cursor"></span></div>
+                </div>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- HERO -->
-    <section class="hero" id="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-badge">
-                    <span class="badge-dot"></span>
-                    <span>Dijital dönüşümde <strong>lider</strong> ortağınız</span>
-                </div>
-                <h1>
-                    Geleceği<br />
-                    <span class="gradient-text">Yazılımla İnşa Ediyoruz</span>
-                </h1>
-                <p>
-                    EMEM GROUP olarak, siber güvenlik, otomasyon ve 
-                    uygulama geliştirme alanlarında uzman çözümlerle 
-                    işletmelerin dijital dönüşümüne liderlik ediyoruz.
-                </p>
-                <div class="hero-buttons">
-                    <a href="#iletisim" class="btn-primary">
-                        <i class="fas fa-arrow-right"></i> Bize Ulaşın
-                    </a>
-                    <a href="#projeler" class="btn-secondary">
-                        <i class="fas fa-folder-open"></i> Projelerimiz
-                    </a>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat">
-                        <h3><span class="counter" data-target="20">0</span>+</h3>
-                        <p>Tamamlanan Proje</p>
+<!-- ================================================================
+HİZMETLER
+================================================================ -->
+<section id="hizmetler">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">✦ Uzmanlık Alanlarımız</span>
+            <h2 class="section-title reveal delay-1">Yazılımda <span class="highlight">360° Çözüm</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">
+                EMEM GROUP olarak, size özel yazılım çözümleri ile işinizi bir üst seviyeye taşıyoruz.
+            </p>
+        </div>
+        <div class="services-grid" style="margin-top:48px;">
+            <div class="service-card glow-card reveal delay-1">
+                <span class="icon">🛡️</span>
+                <h3>Siber Güvenlik</h3>
+                <p>Penetrasyon testleri, ağ güvenliği, güvenlik açığı analizi ve siber tehdit istihbaratı.</p>
+            </div>
+            <div class="service-card glow-card reveal delay-2">
+                <span class="icon">🤖</span>
+                <h3>Otomasyon</h3>
+                <p>İş süreçlerini optimize eden, akıllı ve ölçeklenebilir otomasyon çözümleri.</p>
+            </div>
+            <div class="service-card glow-card reveal delay-3">
+                <span class="icon">🌐</span>
+                <h3>Web Geliştirme</h3>
+                <p>Modern, hızlı ve responsive web siteleri ve web uygulamaları geliştiriyoruz.</p>
+            </div>
+            <div class="service-card glow-card reveal delay-4">
+                <span class="icon">📱</span>
+                <h3>Mobil Uygulama</h3>
+                <p>iOS ve Android için native ve cross-platform mobil uygulama çözümleri.</p>
+            </div>
+            <div class="service-card glow-card reveal delay-5">
+                <span class="icon">💻</span>
+                <h3>Masaüstü Yazılım</h3>
+                <p>Windows, macOS ve Linux için güçlü ve kullanıcı dostu masaüstü uygulamaları.</p>
+            </div>
+            <div class="service-card glow-card reveal delay-6">
+                <span class="icon">🧠</span>
+                <h3>Yapay Zeka</h3>
+                <p>Makine öğrenimi, derin öğrenme ve akıllı otomasyon çözümleri.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+EKİP - FLIP CARD İLE
+================================================================ -->
+<section id="ekip" style="background: rgba(255,255,255,0.01);">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">👥 İki Uzman, Tek Vizyon</span>
+            <h2 class="section-title reveal delay-1">Ekibimizle <span class="highlight">Tanışın</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">
+                Her biri kendi alanında uzman, tutkulu ve yenilikçi iki yazılımcı.
+            </p>
+        </div>
+        <div class="team-grid" style="margin-top:48px;">
+            <!-- Emrullah - Flip Card -->
+            <div class="flip-card reveal delay-1">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <span class="avatar" style="font-size:4rem;">🛡️</span>
+                        <h3 style="margin-top:8px;">Emrullah Çelenk</h3>
+                        <span class="role" style="color:var(--secondary); font-size:0.85rem;">Siber Güvenlik Uzmanı</span>
+                        <p style="color:var(--text-gray); font-size:0.8rem; margin-top:8px;">👆 Üzerine gel</p>
                     </div>
-                    <div class="stat">
-                        <h3><span class="counter" data-target="2">0</span></h3>
-                        <p>Uzman Ekip Üyesi</p>
-                    </div>
-                    <div class="stat">
-                        <h3><span class="counter" data-target="4.9">0</span>⭐</h3>
-                        <p>Müşteri Memnuniyeti</p>
+                    <div class="flip-card-back">
+                        <span class="icon">🛡️</span>
+                        <h3>Emrullah Çelenk</h3>
+                        <p>Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi ve siber tehdit istihbaratı alanlarında uzman.</p>
+                        <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:10px;">
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">Python</span>
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">Nmap</span>
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">Metasploit</span>
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">Kali Linux</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="hero-visual">
-                <div class="glow-ring"></div>
-                <div class="code-window">
-                    <div class="code-header">
-                        <span class="dot red"></span>
-                        <span class="dot yellow"></span>
-                        <span class="dot green"></span>
-                        <span class="title">EMEM_GROUP/core.py</span>
+
+            <!-- Emin - Flip Card -->
+            <div class="flip-card reveal delay-2">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <span class="avatar" style="font-size:4rem;">💻</span>
+                        <h3 style="margin-top:8px;">Emin Ünal</h3>
+                        <span class="role" style="color:var(--secondary); font-size:0.85rem;">Yazılım Geliştirme Uzmanı</span>
+                        <p style="color:var(--text-gray); font-size:0.8rem; margin-top:8px;">👆 Üzerine gel</p>
                     </div>
-                    <div class="code-body">
-                        <div class="line"><span class="k">class</span> <span class="n">EMEMGroup</span>:</div>
-                        <div class="line" style="padding-left:16px;"><span class="k">def</span> <span class="f">__init__</span>(<span class="n">self</span>):</div>
-                        <div class="line" style="padding-left:32px;"><span class="n">self</span>.<span class="n">mission</span> = <span class="str">"Innovate & Build"</span></div>
-                        <div class="line" style="padding-left:32px;"><span class="n">self</span>.<span class="n">vision</span> = <span class="str">"Digital Leadership"</span></div>
-                        <div class="line" style="padding-left:16px;"><span class="k">def</span> <span class="f">develop</span>(<span class="n">self</span>, <span class="n">project</span>):</div>
-                        <div class="line" style="padding-left:32px;"><span class="k">return</span> <span class="str">"🚀 Excellence Delivered"</span></div>
-                        <div class="line"><span class="cmt"># EMEM GROUP ile geleceği inşa edin</span></div>
-                        <div class="line"><span class="n">future</span> = <span class="n">EMEMGroup</span>()<span class="typing-cursor"></span></div>
+                    <div class="flip-card-back">
+                        <span class="icon">💻</span>
+                        <h3>Emin Ünal</h3>
+                        <p>Otomasyon, uygulama geliştirme, web sitesi yapımı ve yapay zeka alanlarında uzman.</p>
+                        <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:10px;">
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">Python</span>
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">JavaScript</span>
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">React</span>
+                            <span style="background:rgba(108,99,255,0.06); color:#A78BFA; font-size:0.6rem; padding:3px 12px; border-radius:30px;">Django</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- HİZMETLER -->
-    <section id="hizmetler">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">✦ Uzmanlık Alanlarımız</span>
-                <h2 class="section-title">Yazılımda <span class="highlight">360° Çözüm</span></h2>
-                <p class="section-subtitle mx-auto">
-                    EMEM GROUP olarak, size özel yazılım çözümleri ile işinizi bir üst seviyeye taşıyoruz.
-                </p>
+<!-- ================================================================
+BAŞARI İSTATİSTİKLERİ
+================================================================ -->
+<section id="istatistikler" style="padding-top:0;">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">📊 Başarı Verileri</span>
+            <h2 class="section-title reveal delay-1">Rakamlarla <span class="highlight">EMEM GROUP</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">Başarılarımız ve hedeflerimiz hakkında bilgiler.</p>
+        </div>
+        <div class="stats-grid" style="margin-top:48px;">
+            <div class="stat-card glow-card reveal delay-1"><span class="number" data-target="20">0</span><span class="label">Tamamlanan Proje</span></div>
+            <div class="stat-card glow-card reveal delay-2"><span class="number" data-target="2">0</span><span class="label">Uzman Ekip Üyesi</span></div>
+            <div class="stat-card glow-card reveal delay-3"><span class="number" data-target="4.9">0</span><span class="label">Müşteri Memnuniyeti</span></div>
+            <div class="stat-card glow-card reveal delay-4"><span class="number" data-target="100">0</span><span class="label">Teslim Başarısı (%)</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+PROJELER
+================================================================ -->
+<section id="projeler" style="background: rgba(255,255,255,0.01);">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">📂 Portföy</span>
+            <h2 class="section-title reveal delay-1">Öne Çıkan <span class="highlight">Projeler</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">EMEM GROUP'un geliştirdiği başarılı projeler.</p>
+        </div>
+        <div class="projects-grid" id="projeListesi" style="margin-top:48px;">
+            <p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">⏳ Projeler yükleniyor...</p>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+BLOG
+================================================================ -->
+<section id="blog" style="background: rgba(255,255,255,0.01);">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">📝 Blog</span>
+            <h2 class="section-title reveal delay-1">Son <span class="highlight">Yazılar</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">EMEM GROUP'dan güncel haberler ve yazılar.</p>
+        </div>
+        <div class="blog-grid" id="blogListesi" style="margin-top:48px;">
+            <p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">⏳ Blog yazıları yükleniyor...</p>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+MÜŞTERİ YORUMLARI
+================================================================ -->
+<section id="yorumlar">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">⭐ Referanslar</span>
+            <h2 class="section-title reveal delay-1">Müşteri <span class="highlight">Yorumları</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">EMEM GROUP ile çalışanlar ne diyor?</p>
+        </div>
+        <div class="testimonials-grid" style="margin-top:48px;">
+            <div class="testimonial-card glow-card reveal delay-1">
+                <div class="stars">★★★★★</div>
+                <p class="text">"EMEM GROUP ile çalışmak gerçekten bir ayrıcalık. Siber güvenlik konusunda harika bir ekip."</p>
+                <p class="author"><strong>Ahmet Yılmaz</strong> · CEO, TechCorp</p>
             </div>
-            <div class="services-grid" style="margin-top:48px;">
-                <div class="service-card"><span class="icon">🛡️</span><h3>Siber Güvenlik</h3><p>Penetrasyon testleri, ağ güvenliği, güvenlik açığı analizi ve siber tehdit istihbaratı.</p></div>
-                <div class="service-card"><span class="icon">🤖</span><h3>Otomasyon</h3><p>İş süreçlerini optimize eden, akıllı ve ölçeklenebilir otomasyon çözümleri.</p></div>
-                <div class="service-card"><span class="icon">🌐</span><h3>Web Geliştirme</h3><p>Modern, hızlı ve responsive web siteleri ve web uygulamaları geliştiriyoruz.</p></div>
-                <div class="service-card"><span class="icon">📱</span><h3>Mobil Uygulama</h3><p>iOS ve Android için native ve cross-platform mobil uygulama çözümleri.</p></div>
-                <div class="service-card"><span class="icon">💻</span><h3>Masaüstü Yazılım</h3><p>Windows, macOS ve Linux için güçlü ve kullanıcı dostu masaüstü uygulamaları.</p></div>
-                <div class="service-card"><span class="icon">🧠</span><h3>Yapay Zeka</h3><p>Makine öğrenimi, derin öğrenme ve akıllı otomasyon çözümleri.</p></div>
+            <div class="testimonial-card glow-card reveal delay-2">
+                <div class="stars">★★★★★</div>
+                <p class="text">"Otomasyon çözümleriyle iş süreçlerimiz %70 hızlandı. Kesinlikle tavsiye ediyorum."</p>
+                <p class="author"><strong>Mehmet Demir</strong> · Operasyon Müdürü</p>
+            </div>
+            <div class="testimonial-card glow-card reveal delay-3">
+                <div class="stars">★★★★★</div>
+                <p class="text">"Web sitemizi yeniden tasarladılar. Hem estetik hem de performans olarak harika oldu."</p>
+                <p class="author"><strong>Zeynep Kaya</strong> · Pazarlama Uzmanı</p>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- EKİP -->
-    <section id="ekip" style="background: rgba(255,255,255,0.01);">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">👥 İki Uzman, Tek Vizyon</span>
-                <h2 class="section-title">Ekibimizle <span class="highlight">Tanışın</span></h2>
-                <p class="section-subtitle mx-auto">
-                    Her biri kendi alanında uzman, tutkulu ve yenilikçi iki yazılımcı.
-                </p>
+<!-- ================================================================
+TEKNOLOJİ STACK
+================================================================ -->
+<section id="teknolojiler" style="background: rgba(255,255,255,0.01); padding-top: 60px; padding-bottom: 60px;">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">🔧 Teknoloji</span>
+            <h2 class="section-title reveal delay-1">Stack <span class="highlight">Teknolojileri</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">Kullandığımız güncel teknoloji araçları ve diller.</p>
+        </div>
+        <div class="tech-grid" style="margin-top:32px;">
+            <span class="tech-item reveal delay-1"><i class="fab fa-python"></i> Python</span>
+            <span class="tech-item reveal delay-2"><i class="fab fa-react"></i> React</span>
+            <span class="tech-item reveal delay-3"><i class="fab fa-node"></i> Node.js</span>
+            <span class="tech-item reveal delay-4">🎨 Django</span>
+            <span class="tech-item reveal delay-5">🧠 TensorFlow</span>
+            <span class="tech-item reveal delay-6">🛡️ Nmap</span>
+            <span class="tech-item reveal delay-1">📊 Pandas</span>
+            <span class="tech-item reveal delay-2"><i class="fas fa-cloud"></i> AWS</span>
+            <span class="tech-item reveal delay-3"><i class="fab fa-docker"></i> Docker</span>
+            <span class="tech-item reveal delay-4"><i class="fab fa-js"></i> TypeScript</span>
+            <span class="tech-item reveal delay-5"><i class="fas fa-mobile-alt"></i> Flutter</span>
+            <span class="tech-item reveal delay-6"><i class="fab fa-git-alt"></i> Git</span>
+            <span class="tech-item reveal delay-1"><i class="fas fa-database"></i> PostgreSQL</span>
+            <span class="tech-item reveal delay-2">🔷 FastAPI</span>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+İNDİRME MERKEZİ
+================================================================ -->
+<section id="downloads">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">📦 İndirme Merkezi</span>
+            <h2 class="section-title reveal delay-1">Araçlarımızı <span class="highlight">Keşfedin</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">EMEM GROUP'un geliştirdiği ücretsiz araçları indirin.</p>
+        </div>
+        <div class="download-grid" style="margin-top:48px;">
+            <div class="download-card glow-card reveal delay-1">
+                <span class="icon">🧠</span>
+                <h4>Yapay Zeka Asistanı</h4>
+                <span class="desc">Akıllı asistan uygulaması</span>
+                <span class="version">v1.2.0</span>
+                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
             </div>
-            <div class="team-grid" style="margin-top:48px;">
-                <div class="team-card">
-                    <span class="avatar">🛡️</span>
-                    <span class="status-badge">● Aktif</span>
-                    <h3>Emrullah Çelenk</h3>
-                    <span class="role">Siber Güvenlik Uzmanı</span>
-                    <p class="specialty">Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi ve siber tehdit istihbaratı alanlarında uzman.</p>
-                    <div class="tags">
-                        <span>Python</span>
-                        <span>Nmap</span>
-                        <span>Metasploit</span>
-                        <span>Wireshark</span>
-                        <span>Kali Linux</span>
-                    </div>
+            <div class="download-card glow-card reveal delay-2">
+                <span class="icon">📊</span>
+                <h4>Excel Otomasyon Aracı</h4>
+                <span class="desc">Verileri otomatik işleyen araç</span>
+                <span class="version">v2.0.1</span>
+                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
+            </div>
+            <div class="download-card glow-card reveal delay-3">
+                <span class="icon">🤖</span>
+                <h4>Telegram Botu</h4>
+                <span class="desc">Otomatik mesajlaşma botu</span>
+                <span class="version">v1.0.0</span>
+                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
+            </div>
+            <div class="download-card glow-card reveal delay-4">
+                <span class="icon">🛡️</span>
+                <h4>Siber Güvenlik Aracı</h4>
+                <span class="desc">Ağ tarama ve analiz aracı</span>
+                <span class="version">v1.1.0</span>
+                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+İLETİŞİM
+================================================================ -->
+<section id="iletisim">
+    <div class="container">
+        <div class="text-center">
+            <span class="section-tag reveal">📬 Bize Ulaşın</span>
+            <h2 class="section-title reveal delay-1">Hemen <span class="highlight">Mesaj Gönderin</span></h2>
+            <p class="section-subtitle mx-auto reveal delay-2">
+                Projeleriniz veya sorularınız için bize yazın, en kısa sürede dönüş yapalım.
+            </p>
+        </div>
+        <div class="contact-grid" style="margin-top:48px;">
+            <div class="contact-info reveal delay-1">
+                <h3>İletişim Bilgileri</h3>
+                <p>EMEM GROUP olarak, projelerinizi konuşmak ve size özel çözümler sunmak için buradayız.</p>
+                <div class="contact-item">
+                    <span class="icon"><i class="fas fa-envelope"></i></span>
+                    <span>info@ememgroup.com</span>
                 </div>
-                <div class="team-card">
-                    <span class="avatar">💻</span>
-                    <span class="status-badge">● Aktif</span>
-                    <h3>Emin Ünal</h3>
-                    <span class="role">Yazılım Geliştirme Uzmanı</span>
-                    <p class="specialty">Otomasyon, uygulama geliştirme, web sitesi yapımı ve yapay zeka alanlarında uzman.</p>
-                    <div class="tags">
-                        <span>Python</span>
-                        <span>JavaScript</span>
-                        <span>React</span>
-                        <span>Django</span>
-                        <span>TensorFlow</span>
-                    </div>
+                <div class="contact-item">
+                    <span class="icon"><i class="fas fa-phone"></i></span>
+                    <span>+90 555 555 55 55</span>
+                </div>
+                <div class="contact-item">
+                    <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <span>İstanbul / Türkiye</span>
+                </div>
+                <div class="contact-item">
+                    <span class="icon"><i class="fas fa-clock"></i></span>
+                    <span>Pazartesi - Cuma: 09:00 - 18:00</span>
+                </div>
+                <div style="display:flex;gap:14px;margin-top:24px;">
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-github"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-youtube"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            <form action="https://formspree.io/f/mnpayagg" method="POST" class="contact-form reveal delay-2">
+                <input type="text" name="name" placeholder="Adınız *" required />
+                <input type="email" name="email" placeholder="E-posta adresiniz *" required />
+                <input type="text" name="konu" placeholder="Konu" />
+                <textarea name="message" rows="4" placeholder="Mesajınız *" required></textarea>
+                <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Mesaj Gönder</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+FOOTER
+================================================================ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="footer-brand reveal delay-1">
+                <h3>EMEM GROUP</h3>
+                <p>Siber güvenlik, otomasyon ve uygulama geliştirme alanlarında uzman, yenilikçi yazılım çözümleri sunan dinamik bir ekip.</p>
+            </div>
+            <div class="footer-col reveal delay-2">
+                <h4>Hızlı Linkler</h4>
+                <ul>
+                    <li><a href="#hizmetler">Hizmetler</a></li>
+                    <li><a href="#ekip">Ekibimiz</a></li>
+                    <li><a href="#projeler">Projeler</a></li>
+                    <li><a href="#downloads">İndirme</a></li>
+                    <li><a href="#blog">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col reveal delay-3">
+                <h4>Kaynaklar</h4>
+                <ul>
+                    <li><a href="#iletisim">İletişim</a></li>
+                    <li><a href="#">Gizlilik Politikası</a></li>
+                    <li><a href="#">Kullanım Koşulları</a></li>
+                </ul>
+            </div>
+            <div class="footer-col reveal delay-4">
+                <h4>Sosyal Medya</h4>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-github"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-twitter"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-youtube"></i></a>
+                    <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-instagram"></i></a>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- BAŞARI İSTATİSTİKLERİ -->
-    <section id="istatistikler" style="padding-top:0;">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">📊 Başarı Verileri</span>
-                <h2 class="section-title">Rakamlarla <span class="highlight">EMEM GROUP</span></h2>
-                <p class="section-subtitle mx-auto">Başarılarımız ve hedeflerimiz hakkında bilgiler.</p>
-            </div>
-            <div class="stats-grid" style="margin-top:48px;">
-                <div class="stat-card"><span class="number" data-target="20">0</span><span class="label">Tamamlanan Proje</span></div>
-                <div class="stat-card"><span class="number" data-target="2">0</span><span class="label">Uzman Ekip Üyesi</span></div>
-                <div class="stat-card"><span class="number" data-target="4.9">0</span><span class="label">Müşteri Memnuniyeti</span></div>
-                <div class="stat-card"><span class="number" data-target="100">0</span><span class="label">Teslim Başarısı (%)</span></div>
-            </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 EMEM GROUP. Tüm hakları saklıdır.</p>
+            <p style="color:var(--text-gray);font-size:0.75rem;">
+                <i class="fas fa-rocket" style="color:var(--primary);"></i>
+                Dijital dönüşümünüz için buradayız.
+            </p>
         </div>
-    </section>
+    </div>
+</footer>
 
-    <!-- PROJELER - SUPABASE'DEN DİNAMİK -->
-    <section id="projeler" style="background: rgba(255,255,255,0.01);">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">📂 Portföy</span>
-                <h2 class="section-title">Öne Çıkan <span class="highlight">Projeler</span></h2>
-                <p class="section-subtitle mx-auto">EMEM GROUP'un geliştirdiği başarılı projeler.</p>
-            </div>
-            <div class="projects-grid" id="projeListesi" style="margin-top:48px;">
-                <p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">⏳ Projeler yükleniyor...</p>
-            </div>
-        </div>
-    </section>
+<!-- ================================================================
+JAVASCRIPT - DÜZELTİLDİ
+================================================================ -->
+<script>
+    // ================================================================
+    // SUPABASE BAĞLANTISI - GLOBAL
+    // ================================================================
+    const SUPABASE_URL = 'https://dwktnertcnlvnruzputg.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_6DJRXuxpH1BYHEX7O-6N4w_f6btyhWk';
 
-    <!-- BLOG -->
-    <section id="blog" style="background: rgba(255,255,255,0.01);">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">📝 Blog</span>
-                <h2 class="section-title">Son <span class="highlight">Yazılar</span></h2>
-                <p class="section-subtitle mx-auto">EMEM GROUP'dan güncel haberler ve yazılar.</p>
-            </div>
-            <div class="blog-grid" id="blogListesi" style="margin-top:48px;">
-                <p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">⏳ Blog yazıları yükleniyor...</p>
-            </div>
-        </div>
-    </section>
+    let supabase;
 
-    <!-- MÜŞTERİ YORUMLARI -->
-    <section id="yorumlar">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">⭐ Referanslar</span>
-                <h2 class="section-title">Müşteri <span class="highlight">Yorumları</span></h2>
-                <p class="section-subtitle mx-auto">EMEM GROUP ile çalışanlar ne diyor?</p>
-            </div>
-            <div class="testimonials-grid" style="margin-top:48px;">
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p class="text">"EMEM GROUP ile çalışmak gerçekten bir ayrıcalık. Siber güvenlik konusunda harika bir ekip."</p>
-                    <p class="author"><strong>Ahmet Yılmaz</strong> · CEO, TechCorp</p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p class="text">"Otomasyon çözümleriyle iş süreçlerimiz %70 hızlandı. Kesinlikle tavsiye ediyorum."</p>
-                    <p class="author"><strong>Mehmet Demir</strong> · Operasyon Müdürü</p>
-                </div>
-                <div class="testimonial-card">
-                    <div class="stars">★★★★★</div>
-                    <p class="text">"Web sitemizi yeniden tasarladılar. Hem estetik hem de performans olarak harika oldu."</p>
-                    <p class="author"><strong>Zeynep Kaya</strong> · Pazarlama Uzmanı</p>
-                </div>
-            </div>
-        </div>
-    </section>
+    try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase bağlantısı başarılı!');
+    } catch (error) {
+        console.error('❌ Supabase bağlantı hatası:', error);
+    }
 
-    <!-- TEKNOLOJİ STACK -->
-    <section id="teknolojiler" style="background: rgba(255,255,255,0.01); padding-top: 60px; padding-bottom: 60px;">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">🔧 Teknoloji</span>
-                <h2 class="section-title">Stack <span class="highlight">Teknolojileri</span></h2>
-                <p class="section-subtitle mx-auto">Kullandığımız güncel teknoloji araçları ve diller.</p>
-            </div>
-            <div class="tech-grid" style="margin-top:32px;">
-                <span class="tech-item"><i class="fab fa-python"></i> Python</span>
-                <span class="tech-item"><i class="fab fa-react"></i> React</span>
-                <span class="tech-item"><i class="fab fa-node"></i> Node.js</span>
-                <span class="tech-item">🎨 Django</span>
-                <span class="tech-item">🧠 TensorFlow</span>
-                <span class="tech-item">🛡️ Nmap</span>
-                <span class="tech-item">📊 Pandas</span>
-                <span class="tech-item"><i class="fas fa-cloud"></i> AWS</span>
-                <span class="tech-item"><i class="fab fa-docker"></i> Docker</span>
-                <span class="tech-item"><i class="fab fa-js"></i> TypeScript</span>
-                <span class="tech-item"><i class="fas fa-mobile-alt"></i> Flutter</span>
-                <span class="tech-item"><i class="fab fa-git-alt"></i> Git</span>
-                <span class="tech-item"><i class="fas fa-database"></i> PostgreSQL</span>
-                <span class="tech-item">🔷 FastAPI</span>
-            </div>
-        </div>
-    </section>
+    // ================================================================
+    // TOAST SİSTEMİ
+    // ================================================================
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
 
-    <!-- İNDİRME MERKEZİ -->
-    <section id="downloads">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">📦 İndirme Merkezi</span>
-                <h2 class="section-title">Araçlarımızı <span class="highlight">Keşfedin</span></h2>
-                <p class="section-subtitle mx-auto">EMEM GROUP'un geliştirdiği ücretsiz araçları indirin.</p>
-            </div>
-            <div class="download-grid" style="margin-top:48px;">
-                <div class="download-card">
-                    <span class="icon">🧠</span>
-                    <h4>Yapay Zeka Asistanı</h4>
-                    <span class="desc">Akıllı asistan uygulaması</span>
-                    <span class="version">v1.2.0</span>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-                <div class="download-card">
-                    <span class="icon">📊</span>
-                    <h4>Excel Otomasyon Aracı</h4>
-                    <span class="desc">Verileri otomatik işleyen araç</span>
-                    <span class="version">v2.0.1</span>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-                <div class="download-card">
-                    <span class="icon">🤖</span>
-                    <h4>Telegram Botu</h4>
-                    <span class="desc">Otomatik mesajlaşma botu</span>
-                    <span class="version">v1.0.0</span>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-                <div class="download-card">
-                    <span class="icon">🛡️</span>
-                    <h4>Siber Güvenlik Aracı</h4>
-                    <span class="desc">Ağ tarama ve analiz aracı</span>
-                    <span class="version">v1.1.0</span>
-                    <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-                </div>
-            </div>
-        </div>
-    </section>
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(50px)';
+            setTimeout(() => toast.remove(), 400);
+        }, 4000);
+    }
 
-    <!-- İLETİŞİM -->
-    <section id="iletisim">
-        <div class="container">
-            <div class="text-center">
-                <span class="section-tag">📬 Bize Ulaşın</span>
-                <h2 class="section-title">Hemen <span class="highlight">Mesaj Gönderin</span></h2>
-                <p class="section-subtitle mx-auto">
-                    Projeleriniz veya sorularınız için bize yazın, en kısa sürede dönüş yapalım.
-                </p>
-            </div>
-            <div class="contact-grid" style="margin-top:48px;">
-                <div class="contact-info">
-                    <h3>İletişim Bilgileri</h3>
-                    <p>EMEM GROUP olarak, projelerinizi konuşmak ve size özel çözümler sunmak için buradayız.</p>
-                    <div class="contact-item">
-                        <span class="icon"><i class="fas fa-envelope"></i></span>
-                        <span>info@ememgroup.com</span>
-                    </div>
-                    <div class="contact-item">
-                        <span class="icon"><i class="fas fa-phone"></i></span>
-                        <span>+90 555 555 55 55</span>
-                    </div>
-                    <div class="contact-item">
-                        <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
-                        <span>İstanbul / Türkiye</span>
-                    </div>
-                    <div class="contact-item">
-                        <span class="icon"><i class="fas fa-clock"></i></span>
-                        <span>Pazartesi - Cuma: 09:00 - 18:00</span>
-                    </div>
-                    <div style="display:flex;gap:14px;margin-top:24px;">
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-github"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-twitter"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-youtube"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-                <form action="https://formspree.io/f/mnpayagg" method="POST" class="contact-form">
-                    <input type="text" name="name" placeholder="Adınız *" required />
-                    <input type="email" name="email" placeholder="E-posta adresiniz *" required />
-                    <input type="text" name="konu" placeholder="Konu" />
-                    <textarea name="message" rows="4" placeholder="Mesajınız *" required></textarea>
-                    <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Mesaj Gönder</button>
-                </form>
-            </div>
-        </div>
-    </section>
+    // ================================================================
+    // THEME TOGGLE
+    // ================================================================
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        const themeIcon = themeToggle.querySelector('i');
+        let isDark = localStorage.getItem('theme') !== 'light';
 
-    <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h3>EMEM GROUP</h3>
-                    <p>Siber güvenlik, otomasyon ve uygulama geliştirme alanlarında uzman, yenilikçi yazılım çözümleri sunan dinamik bir ekip.</p>
-                </div>
-                <div class="footer-col">
-                    <h4>Hızlı Linkler</h4>
-                    <ul>
-                        <li><a href="#hizmetler">Hizmetler</a></li>
-                        <li><a href="#ekip">Ekibimiz</a></li>
-                        <li><a href="#projeler">Projeler</a></li>
-                        <li><a href="#downloads">İndirme</a></li>
-                        <li><a href="#blog">Blog</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Kaynaklar</h4>
-                    <ul>
-                        <li><a href="#iletisim">İletişim</a></li>
-                        <li><a href="#">Gizlilik Politikası</a></li>
-                        <li><a href="#">Kullanım Koşulları</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Sosyal Medya</h4>
-                    <div style="display:flex;gap:14px;flex-wrap:wrap;">
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-github"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-twitter"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-youtube"></i></a>
-                        <a href="#" style="color:var(--text-gray);font-size:1.3rem;transition:var(--transition);"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 EMEM GROUP. Tüm hakları saklıdır.</p>
-                <p style="color:var(--text-gray);font-size:0.75rem;">
-                    <i class="fas fa-rocket" style="color:var(--primary);"></i>
-                    Dijital dönüşümünüz için buradayız.
-                </p>
-            </div>
-        </div>
-    </footer>
+        function applyTheme() {
+            if (isDark) {
+                document.body.classList.remove('light-mode');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.body.classList.add('light-mode');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'light');
+            }
+        }
 
-    <!-- ================================================================
-    JAVASCRIPT - SUPABASE AUTH + DİĞER FONKSİYONLAR
-    ================================================================ -->
-    <script>
-        // ================================================================
-        // SUPABASE AUTH - KULLANICI GİRİŞ SİSTEMİ
-        // ================================================================
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            applyTheme();
+            showToast(isDark ? '🌙 Karanlık tema' : '☀️ Aydınlık tema', 'info');
+        });
 
-        // Supabase istemcisini başlat
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        applyTheme();
+    }
 
-        // ================================================================
-        // NAVBAR
-        // ================================================================
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('navLinks');
+    // ================================================================
+    // PROGRESS BAR
+    // ================================================================
+    window.addEventListener('scroll', () => {
+        const scrollTop = window.scrollY;
+        const height = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = (scrollTop / height) * 100;
+        const bar = document.getElementById('progressBar');
+        if (bar) bar.style.width = progress + '%';
+    });
 
+    // ================================================================
+    // BACK TO TOP
+    // ================================================================
+    const backToTopBtn = document.getElementById('backToTop');
+    if (backToTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 500) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // ================================================================
+    // NAVBAR AKTİF LINK
+    // ================================================================
+    const sections = document.querySelectorAll('section[id]');
+    const navLinksAll = document.querySelectorAll('.nav-links a:not(.btn-nav)');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 100;
+            if (window.scrollY >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinksAll.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    // ================================================================
+    // BUTTON RIPPLE EFFECT
+    // ================================================================
+    document.querySelectorAll('.btn-primary, .btn-secondary').forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+            const rect = btn.getBoundingClientRect();
+            btn.style.setProperty('--x', ((e.clientX - rect.left) / rect.width * 100) + '%');
+            btn.style.setProperty('--y', ((e.clientY - rect.top) / rect.height * 100) + '%');
+        });
+    });
+
+    // ================================================================
+    // NAVBAR
+    // ================================================================
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.getElementById('navLinks');
+
+    if (hamburger && navLinks) {
         hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
             navLinks.classList.toggle('open');
         });
 
         document.querySelectorAll('.nav-links a').forEach(link => {
             link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
                 navLinks.classList.remove('open');
             });
         });
+    }
 
-        window.addEventListener('scroll', () => {
-            const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+        const navbar = document.getElementById('navbar');
+        if (navbar) {
             if (window.scrollY > 50) {
                 navbar.classList.add('scrolled');
             } else {
                 navbar.classList.remove('scrolled');
             }
+        }
+    });
+
+    // ================================================================
+    // SAYAÇ ANİMASYONU
+    // ================================================================
+    const counters = document.querySelectorAll('.counter');
+
+    const animateCounter = (counter) => {
+        const target = parseFloat(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const startTime = performance.now();
+
+        const updateCounter = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const current = target * easeOutQuart;
+
+            if (Number.isInteger(target)) {
+                counter.textContent = Math.floor(current);
+            } else {
+                counter.textContent = current.toFixed(1);
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target;
+            }
+        };
+
+        requestAnimationFrame(updateCounter);
+    };
+
+    const observerOptions = {
+        threshold: 0.3,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                animateCounter(counter);
+                observer.unobserve(counter);
+            }
         });
+    }, observerOptions);
 
-        // ================================================================
-        // SAYAÇ ANİMASYONU
-        // ================================================================
-        const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        observer.observe(counter);
+    });
 
-        const animateCounter = (counter) => {
-            const target = parseFloat(counter.getAttribute('data-target'));
-            const duration = 2000;
-            const startTime = performance.now();
+    // ================================================================
+    // REVEAL ANIMATION
+    // ================================================================
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.15 });
 
-            const updateCounter = (currentTime) => {
-                const elapsed = currentTime - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-                const current = target * easeOutQuart;
-                
-                if (Number.isInteger(target)) {
-                    counter.textContent = Math.floor(current);
-                } else {
-                    counter.textContent = current.toFixed(1);
-                }
-                
-                if (progress < 1) {
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    counter.textContent = target;
-                }
-            };
-            
-            requestAnimationFrame(updateCounter);
-        };
+    document.querySelectorAll('.reveal').forEach(el => {
+        revealObserver.observe(el);
+    });
 
-        const observerOptions = {
-            threshold: 0.3,
-            rootMargin: '0px 0px -50px 0px'
-        };
+    // ================================================================
+    // MOUSE IŞIK TAKİBİ
+    // ================================================================
+    const lightFollower = document.getElementById('lightFollower');
+    if (lightFollower) {
+        document.addEventListener('mousemove', (e) => {
+            lightFollower.style.left = e.clientX + 'px';
+            lightFollower.style.top = e.clientY + 'px';
+        });
+    }
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const counter = entry.target;
-                    animateCounter(counter);
-                    observer.unobserve(counter);
+    // ================================================================
+    // PARALLAX ELEMENT
+    // ================================================================
+    window.addEventListener('scroll', () => {
+        const scrollY = window.scrollY;
+        document.querySelectorAll('.parallax-element').forEach(el => {
+            const speed = parseFloat(el.dataset.speed) || 0.05;
+            const offset = scrollY * speed;
+            el.style.transform = `translateY(${offset}px)`;
+        });
+    });
+
+    // ================================================================
+    // PROJELERİ GETİR
+    // ================================================================
+    async function projeleriGetir() {
+        try {
+            if (!supabase) {
+                console.error('Supabase bağlantısı yok!');
+                return;
+            }
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/projeler?select=*`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                 }
             });
-        }, observerOptions);
 
-        counters.forEach(counter => {
-            observer.observe(counter);
-        });
+            if (!response.ok) {
+                throw new Error(`HTTP hatası: ${response.status}`);
+            }
 
-        // ================================================================
-        // SUPABASE BAĞLANTISI - PROJELERİ ÇEK
-        // ================================================================
-        const SUPABASE_URL = 'https://dwktnertcnlvnruzputg.supabase.co';
-        const SUPABASE_ANON_KEY = 'sb_publishable_6DJRXuxpH1BYHEX7O-6N4w_f6btyhWk';
+            const projeler = await response.json();
+            const container = document.getElementById('projeListesi');
+            if (!container) return;
+            container.innerHTML = '';
 
-        async function projeleriGetir() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/projeler?select=*`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP hatası: ${response.status}`);
-                }
-                
-                const projeler = await response.json();
-                const container = document.getElementById('projeListesi');
-                container.innerHTML = '';
+            if (projeler.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">📭 Henüz proje eklenmemiş.</p>';
+                return;
+            }
 
-                if (projeler.length === 0) {
-                    container.innerHTML = '<p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">📭 Henüz proje eklenmemiş.</p>';
-                    return;
-                }
+            projeler.forEach(proje => {
+                const kart = document.createElement('div');
+                kart.className = 'project-card glow-card reveal';
+                kart.style.setProperty('transition-delay', (Math.random() * 0.3) + 's');
 
-                projeler.forEach(proje => {
-                    const kart = document.createElement('div');
-                    kart.className = 'project-card';
-                    
-                    const etiketlerHTML = proje.etiketler && proje.etiketler.length > 0 
-                        ? proje.etiketler.map(etiket => `<span>${etiket}</span>`).join('') 
-                        : '';
-                    
-                    kart.innerHTML = `
+                const etiketlerHTML = proje.etiketler && proje.etiketler.length > 0 ?
+                    proje.etiketler.map(etiket => `<span>${etiket}</span>`).join('') :
+                    '';
+
+                kart.innerHTML = `
                         <span class="icon">${proje.ikon || '📁'}</span>
                         <div class="project-tags">${etiketlerHTML}</div>
                         <h3>${proje.baslik}</h3>
                         <p class="desc">${proje.aciklama || ''}</p>
                         <a href="${proje.dosya_url || '#'}" class="btn-download"><i class="fas fa-download"></i> İndir</a>
                     `;
-                    container.appendChild(kart);
-                });
-                
-            } catch (hata) {
-                console.error('Projeler yüklenirken hata:', hata);
-                document.getElementById('projeListesi').innerHTML = '<p style="color: #f87171; text-align: center; grid-column: 1 / -1;">❌ Projeler yüklenemedi. Lütfen daha sonra tekrar deneyin.</p>';
+                container.appendChild(kart);
+
+                if (revealObserver) revealObserver.observe(kart);
+            });
+
+        } catch (hata) {
+            console.error('Projeler yüklenirken hata:', hata);
+            const container = document.getElementById('projeListesi');
+            if (container) {
+                container.innerHTML = '<p style="color: #f87171; text-align: center; grid-column: 1 / -1;">❌ Projeler yüklenemedi. Lütfen daha sonra tekrar deneyin.</p>';
             }
         }
+    }
 
-        // ================================================================
-        // SUPABASE BAĞLANTISI - BLOG YAZILARINI ÇEK
-        // ================================================================
-        async function bloglariGetir() {
-            try {
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/blog?select=*&order=olusturma_tarihi.desc&limit=3`, {
-                    headers: {
-                        'apikey': SUPABASE_ANON_KEY,
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP hatası: ${response.status}`);
+    // ================================================================
+    // BLOG YAZILARINI GETİR
+    // ================================================================
+    async function bloglariGetir() {
+        try {
+            if (!supabase) {
+                console.error('Supabase bağlantısı yok!');
+                return;
+            }
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/blog?select=*&order=olusturma_tarihi.desc&limit=3`, {
+                headers: {
+                    'apikey': SUPABASE_ANON_KEY,
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
                 }
-                
-                const yazilar = await response.json();
-                const container = document.getElementById('blogListesi');
-                
-                if (yazilar.length === 0) {
-                    container.innerHTML = '<p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">📭 Henüz blog yazısı yok.</p>';
-                    return;
-                }
+            });
 
-                container.innerHTML = yazilar.map(y => `
-                    <div class="blog-card">
+            if (!response.ok) {
+                throw new Error(`HTTP hatası: ${response.status}`);
+            }
+
+            const yazilar = await response.json();
+            const container = document.getElementById('blogListesi');
+            if (!container) return;
+
+            if (yazilar.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-gray); text-align: center; grid-column: 1 / -1;">📭 Henüz blog yazısı yok.</p>';
+                return;
+            }
+
+            container.innerHTML = yazilar.map((y, index) => `
+                    <div class="blog-card glow-card reveal delay-${(index % 3) + 1}">
                         <span class="tag">${y.kategori || 'Genel'}</span>
                         <h3>${y.baslik}</h3>
                         <p class="ozet">${y.ozet || y.icerik.substring(0, 120) + '...'}</p>
@@ -2462,16 +3389,18 @@
                         </div>
                     </div>
                 `).join('');
-                
-            } catch (hata) {
-                console.error('Blog yüklenirken hata:', hata);
-                document.getElementById('blogListesi').innerHTML = '<p style="color: #f87171; text-align: center; grid-column: 1 / -1;">❌ Blog yazıları yüklenemedi.</p>';
+
+        } catch (hata) {
+            console.error('Blog yüklenirken hata:', hata);
+            const container = document.getElementById('blogListesi');
+            if (container) {
+                container.innerHTML = '<p style="color: #f87171; text-align: center; grid-column: 1 / -1;">❌ Blog yazıları yüklenemedi.</p>';
             }
         }
+    }
 
-        // Blog detay (basit popup)
-        function blogDetay(id) {
-            fetch(`${SUPABASE_URL}/rest/v1/blog?id=eq.${id}&select=*`, {
+    function blogDetay(id) {
+        fetch(`${SUPABASE_URL}/rest/v1/blog?id=eq.${id}&select=*`, {
                 headers: {
                     'apikey': SUPABASE_ANON_KEY,
                     'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
@@ -2483,383 +3412,399 @@
                 const y = data[0];
                 alert(`📌 ${y.baslik}\n\n${y.icerik || 'İçerik bulunamadı.'}\n\n📅 ${new Date(y.olusturma_tarihi).toLocaleDateString('tr-TR')} · 👤 ${y.yazar || 'EMEM GROUP'}`);
             })
-            .catch(() => alert('❌ Blog detayı yüklenirken hata oluştu.'));
-        }
+            .catch(() => showToast('❌ Blog detayı yüklenirken hata oluştu.', 'error'));
+    }
 
-        // ================================================================
-        // AUTH MODAL KONTROLLERİ
-        // ================================================================
-        const authModal = document.getElementById('authModal');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
+    // ================================================================
+    // AUTH MODAL
+    // ================================================================
+    const authModal = document.getElementById('authModal');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
 
-        function openLogin() {
-            authModal.classList.add('open');
-            loginForm.style.display = 'block';
-            registerForm.style.display = 'none';
-            clearErrors();
-        }
+    function openLogin() {
+        if (!authModal) return;
+        authModal.style.display = 'flex';
+        authModal.classList.add('open');
+        if (loginForm) loginForm.style.display = 'block';
+        if (registerForm) registerForm.style.display = 'none';
+        clearErrors();
+    }
 
-        function openRegister() {
-            authModal.classList.add('open');
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'block';
-            clearErrors();
-        }
+    function openRegister() {
+        if (!authModal) return;
+        authModal.style.display = 'flex';
+        authModal.classList.add('open');
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerForm) registerForm.style.display = 'block';
+        clearErrors();
+    }
 
-        function showLogin() {
-            loginForm.style.display = 'block';
-            registerForm.style.display = 'none';
-            clearErrors();
-        }
+    function showLogin() {
+        if (loginForm) loginForm.style.display = 'block';
+        if (registerForm) registerForm.style.display = 'none';
+        clearErrors();
+    }
 
-        function showRegister() {
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'block';
-            clearErrors();
-        }
+    function showRegister() {
+        if (loginForm) loginForm.style.display = 'none';
+        if (registerForm) registerForm.style.display = 'block';
+        clearErrors();
+    }
 
-        function closeAuthModal() {
-            authModal.classList.remove('open');
-            clearErrors();
-        }
+    function closeAuthModal() {
+        if (!authModal) return;
+        authModal.style.display = 'none';
+        authModal.classList.remove('open');
+        clearErrors();
+    }
 
-        document.getElementById('closeAuth').addEventListener('click', closeAuthModal);
+    const closeAuthBtn = document.getElementById('closeAuth');
+    if (closeAuthBtn) {
+        closeAuthBtn.addEventListener('click', closeAuthModal);
+    }
 
+    if (authModal) {
         authModal.addEventListener('click', (e) => {
             if (e.target === authModal) closeAuthModal();
         });
+    }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeAuthModal();
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeAuthModal();
+    });
+
+    function clearErrors() {
+        document.querySelectorAll('.auth-error, .auth-success').forEach(el => {
+            el.style.display = 'none';
+            el.textContent = '';
         });
+    }
 
-        function clearErrors() {
-            document.querySelectorAll('.auth-error, .auth-success').forEach(el => {
-                el.style.display = 'none';
-                el.textContent = '';
-            });
+    function showError(elementId, message) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.textContent = message;
+        el.style.display = 'block';
+    }
+
+    function showSuccess(elementId, message) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        el.textContent = message;
+        el.style.display = 'block';
+        el.style.color = '#34D399';
+    }
+
+    // ================================================================
+    // KAYIT OL
+    // ================================================================
+    async function handleRegister() {
+        if (!supabase) {
+            showToast('❌ Supabase bağlantısı kurulamadı!', 'error');
+            return;
         }
 
-        function showError(elementId, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.style.display = 'block';
+        const name = document.getElementById('registerName')?.value?.trim() || '';
+        const email = document.getElementById('registerEmail')?.value?.trim() || '';
+        const password = document.getElementById('registerPassword')?.value || '';
+
+        clearErrors();
+
+        if (!email || !password) {
+            showError('registerError', 'Lütfen e-posta ve şifrenizi girin.');
+            return;
         }
 
-        function showSuccess(elementId, message) {
-            const el = document.getElementById(elementId);
-            el.textContent = message;
-            el.style.display = 'block';
-            el.style.color = '#34D399';
+        if (password.length < 6) {
+            showError('registerError', 'Şifre en az 6 karakter olmalıdır.');
+            return;
         }
 
-        // ================================================================
-        // KAYIT OL
-        // ================================================================
-        async function handleRegister() {
-            const name = document.getElementById('registerName').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
-            const password = document.getElementById('registerPassword').value;
-
-            clearErrors();
-
-            if (!email || !password) {
-                showError('registerError', 'Lütfen e-posta ve şifrenizi girin.');
-                return;
-            }
-
-            if (password.length < 6) {
-                showError('registerError', 'Şifre en az 6 karakter olmalıdır.');
-                return;
-            }
-
-            try {
-                const { data, error } = await supabase.auth.signUp({
-                    email: email,
-                    password: password,
-                    options: {
-                        data: {
-                            full_name: name || 'Kullanıcı'
-                        }
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email: email,
+                password: password,
+                options: {
+                    data: {
+                        full_name: name || 'Kullanıcı'
                     }
-                });
-
-                if (error) throw error;
-
-                showSuccess('registerSuccess', '✅ Kayıt başarılı! Lütfen e-postanızı doğrulayın.');
-                setTimeout(() => {
-                    closeAuthModal();
-                    checkUser();
-                }, 2000);
-
-            } catch (error) {
-                console.error('Kayıt hatası:', error);
-                showError('registerError', '❌ ' + (error.message || 'Kayıt sırasında hata oluştu.'));
-            }
-        }
-
-        // ================================================================
-        // GİRİŞ YAP
-        // ================================================================
-        async function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            clearErrors();
-
-            if (!email || !password) {
-                showError('loginError', 'Lütfen e-posta ve şifrenizi girin.');
-                return;
-            }
-
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
-                if (error) throw error;
-
-                showSuccess('loginSuccess', '✅ Giriş başarılı!');
-                setTimeout(() => {
-                    closeAuthModal();
-                    checkUser();
-                }, 1000);
-
-            } catch (error) {
-                console.error('Giriş hatası:', error);
-                showError('loginError', '❌ ' + (error.message || 'Giriş sırasında hata oluştu.'));
-            }
-        }
-
-        // ================================================================
-        // GOOGLE İLE GİRİŞ
-        // ================================================================
-        async function handleGoogleLogin() {
-            try {
-                const { data, error } = await supabase.auth.signInWithOAuth({
-                    provider: 'google',
-                    options: {
-                        redirectTo: window.location.origin + window.location.pathname
-                    }
-                });
-
-                if (error) throw error;
-
-            } catch (error) {
-                console.error('Google giriş hatası:', error);
-                alert('❌ Google ile giriş sırasında hata oluştu: ' + error.message);
-            }
-        }
-
-        // ================================================================
-        // ÇIKIŞ YAP
-        // ================================================================
-        async function handleLogout() {
-            try {
-                const { error } = await supabase.auth.signOut();
-                if (error) throw error;
-                checkUser();
-                location.reload();
-            } catch (error) {
-                console.error('Çıkış hatası:', error);
-                alert('❌ Çıkış sırasında hata oluştu.');
-            }
-        }
-
-        // ================================================================
-        // KULLANICI DURUMUNU KONTROL ET
-        // ================================================================
-        async function checkUser() {
-            try {
-                const { data: { user }, error } = await supabase.auth.getUser();
-
-                const notLoggedIn = document.getElementById('notLoggedIn');
-                const loggedIn = document.getElementById('loggedIn');
-                const userName = document.getElementById('userName');
-
-                if (user) {
-                    notLoggedIn.style.display = 'none';
-                    loggedIn.style.display = 'flex';
-                    userName.textContent = user.user_metadata?.full_name || user.email || 'Kullanıcı';
-                } else {
-                    notLoggedIn.style.display = 'flex';
-                    loggedIn.style.display = 'none';
                 }
-            } catch (error) {
-                console.error('Kullanıcı kontrol hatası:', error);
-            }
+            });
+
+            if (error) throw error;
+
+            showSuccess('registerSuccess', '✅ Kayıt başarılı! Lütfen e-postanızı doğrulayın.');
+            showToast('✅ Kayıt başarılı! Hoş geldiniz!', 'success');
+            setTimeout(() => {
+                closeAuthModal();
+                checkUser();
+            }, 2000);
+
+        } catch (error) {
+            console.error('Kayıt hatası:', error);
+            showError('registerError', '❌ ' + (error.message || 'Kayıt sırasında hata oluştu.'));
+            showToast('❌ Kayıt hatası: ' + error.message, 'error');
+        }
+    }
+
+    // ================================================================
+    // GİRİŞ YAP
+    // ================================================================
+    async function handleLogin() {
+        if (!supabase) {
+            showToast('❌ Supabase bağlantısı kurulamadı!', 'error');
+            return;
         }
 
-        // ================================================================
-        // SAYFA YÜKLENDİĞİNDE
-        // ================================================================
-        document.addEventListener('DOMContentLoaded', () => {
-            projeleriGetir();
-            bloglariGetir();
-            checkUser();
-        });
+        const email = document.getElementById('loginEmail')?.value?.trim() || '';
+        const password = document.getElementById('loginPassword')?.value || '';
 
-        // Oturum değişikliklerini dinle
+        clearErrors();
+
+        if (!email || !password) {
+            showError('loginError', 'Lütfen e-posta ve şifrenizi girin.');
+            return;
+        }
+
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+            if (error) throw error;
+
+            showSuccess('loginSuccess', '✅ Giriş başarılı!');
+            showToast('✅ Hoş geldiniz, ' + (data.user?.user_metadata?.full_name || data.user?.email || '') + '!', 'success');
+            setTimeout(() => {
+                closeAuthModal();
+                checkUser();
+            }, 1000);
+
+        } catch (error) {
+            console.error('Giriş hatası:', error);
+            showError('loginError', '❌ ' + (error.message || 'Giriş sırasında hata oluştu.'));
+            showToast('❌ Giriş hatası: ' + error.message, 'error');
+        }
+    }
+
+    // ================================================================
+    // GOOGLE İLE GİRİŞ
+    // ================================================================
+    async function handleGoogleLogin() {
+        if (!supabase) {
+            showToast('❌ Supabase bağlantısı kurulamadı!', 'error');
+            return;
+        }
+        try {
+            const { data, error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: window.location.origin + window.location.pathname
+                }
+            });
+
+            if (error) throw error;
+
+        } catch (error) {
+            console.error('Google giriş hatası:', error);
+            showToast('❌ Google ile giriş sırasında hata oluştu: ' + error.message, 'error');
+        }
+    }
+
+    // ================================================================
+    // ÇIKIŞ YAP
+    // ================================================================
+    async function handleLogout() {
+        if (!supabase) {
+            showToast('❌ Supabase bağlantısı kurulamadı!', 'error');
+            return;
+        }
+        try {
+            const { error } = await supabase.auth.signOut();
+            if (error) throw error;
+            showToast('👋 Çıkış yapıldı.', 'info');
+            checkUser();
+            location.reload();
+        } catch (error) {
+            console.error('Çıkış hatası:', error);
+            showToast('❌ Çıkış sırasında hata oluştu.', 'error');
+        }
+    }
+
+    // ================================================================
+    // KULLANICI DURUMUNU KONTROL ET
+    // ================================================================
+    async function checkUser() {
+        if (!supabase) return;
+        try {
+            const { data: { user }, error } = await supabase.auth.getUser();
+
+            const notLoggedIn = document.getElementById('notLoggedIn');
+            const loggedIn = document.getElementById('loggedIn');
+            const userName = document.getElementById('userName');
+
+            if (user) {
+                if (notLoggedIn) notLoggedIn.style.display = 'none';
+                if (loggedIn) loggedIn.style.display = 'flex';
+                if (userName) userName.textContent = user.user_metadata?.full_name || user.email || 'Kullanıcı';
+            } else {
+                if (notLoggedIn) notLoggedIn.style.display = 'flex';
+                if (loggedIn) loggedIn.style.display = 'none';
+            }
+        } catch (error) {
+            console.error('Kullanıcı kontrol hatası:', error);
+        }
+    }
+
+    // ================================================================
+    // SAYFA YÜKLENDİĞİNDE
+    // ================================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        projeleriGetir();
+        bloglariGetir();
+        checkUser();
+    });
+
+    if (supabase) {
         supabase.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
                 checkUser();
             }
         });
+    }
 
-        // ================================================================
-        // YAPAY ZEKA ASİSTANI - SOHBET BOTU
-        // ================================================================
+    // ================================================================
+    // YAPAY ZEKA ASİSTANI - SOHBET BOTU (DÜZELTİLDİ)
+    // ================================================================
+    const knowledgeBase = [
+        { keywords: ["merhaba", "selam", "hey", "hi", "hello"], response: "Merhaba! 👋 EMEM GROUP Yapay Zeka Asistanı'yım. Size nasıl yardımcı olabilirim?" },
+        { keywords: ["nasılsın", "naber", "iyi misin", "how are you"], response: "Harikayım! 🚀 Size yardımcı olmak için buradayım. Sizinle sohbet etmek ne güzel!" },
+        { keywords: ["emem", "emem group", "şirket", "firma", "hakkınızda"], response: "EMEM GROUP, siber güvenlik, otomasyon ve yazılım geliştirme alanlarında uzman, yenilikçi bir yazılım şirketidir. Ekibimiz Emrullah Çelenk (Siber Güvenlik) ve Emin Ünal (Yazılım Geliştirme) olmak üzere iki uzmandan oluşur. Daha fazla bilgi için web sitemizi keşfedin! 🌐" },
+        { keywords: ["hizmet", "hizmetler", "ne yapıyorsunuz", "işler"], response: "EMEM GROUP olarak şu hizmetleri sunuyoruz:\n🛡️ Siber Güvenlik\n🤖 Otomasyon\n🌐 Web Geliştirme\n📱 Mobil Uygulama\n💻 Masaüstü Yazılım\n🧠 Yapay Zeka\n\nDetaylar için Hizmetler bölümüne bakabilirsiniz!" },
+        { keywords: ["emrullah", "emrullah çelenk", "siber güvenlik uzmanı"], response: "Emrullah Çelenk, EMEM GROUP'un Siber Güvenlik Uzmanı'dır. Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi ve siber tehdit istihbaratı alanlarında uzmanlaşmıştır. 🛡️" },
+        { keywords: ["emin", "emin ünal", "yazılım geliştirme uzmanı"], response: "Emin Ünal, EMEM GROUP'un Yazılım Geliştirme Uzmanı'dır. Otomasyon, uygulama geliştirme, web sitesi yapımı ve yapay zeka alanlarında uzmanlaşmıştır. 💻" },
+        { keywords: ["proje", "projeler", "çalışma", "portföy"], response: "Öne çıkan projelerimiz:\n🧠 Yapay Zeka Asistanı\n📊 Excel Otomasyon Aracı\n🤖 Telegram Botu\n🛡️ Siber Güvenlik Aracı\n\nDetaylar için Projeler bölümüne göz atabilirsiniz!" },
+        { keywords: ["iletişim", "ulaş", "mail", "adres", "telefon", "numara"], response: "Bize şu kanallardan ulaşabilirsiniz:\n📧 info@ememgroup.com\n📞 +90 555 555 55 55\n📍 İstanbul / Türkiye\n\nİletişim formunu doldurarak da bize yazabilirsiniz! 📬" },
+        { keywords: ["indirme", "download", "araç", "araçlar", "indir"], response: "Tüm araçlarımıza İndirme Merkezi'nden ulaşabilirsiniz. Yapay Zeka Asistanı, Excel Otomasyon Aracı, Telegram Botu ve Siber Güvenlik Aracı ücretsiz olarak indirilmeye hazır! 📦" },
+        { keywords: ["teşekkür", "sağol", "tesekkürler", "thanks", "sağ ol", "teşekkür ederim"], response: "Rica ederim! 🎉 Size yardımcı olabildiğime çok sevindim. Başka sorularınız varsa her zaman buradayım. EMEM GROUP ailesi olarak sizi ağırlamaktan mutluluk duyarız! 🌟" },
+        { keywords: ["görüşürüz", "hoşçakal", "bye", "goodbye", "güle güle"], response: "Görüşmek üzere! 👋 Her zaman kapımız açık. EMEM GROUP olarak sizi bekleriz. İyi günler dileriz! 🌟" }
+    ];
 
-        // ----- BİLGİ VERİTABANI -----
-        const knowledgeBase = [
-            {
-                keywords: ["merhaba", "selam", "hey", "hi", "hello"],
-                response: "Merhaba! 👋 EMEM GROUP Yapay Zeka Asistanı'yım. Size nasıl yardımcı olabilirim?"
-            },
-            {
-                keywords: ["nasılsın", "naber", "iyi misin", "how are you"],
-                response: "Harikayım! 🚀 Size yardımcı olmak için buradayım. Sizinle sohbet etmek ne güzel!"
-            },
-            {
-                keywords: ["emem", "emem group", "şirket", "firma", "hakkınızda"],
-                response: "EMEM GROUP, siber güvenlik, otomasyon ve yazılım geliştirme alanlarında uzman, yenilikçi bir yazılım şirketidir. Ekibimiz Emrullah Çelenk (Siber Güvenlik) ve Emin Ünal (Yazılım Geliştirme) olmak üzere iki uzmandan oluşur. Daha fazla bilgi için web sitemizi keşfedin! 🌐"
-            },
-            {
-                keywords: ["hizmet", "hizmetler", "ne yapıyorsunuz", "işler"],
-                response: "EMEM GROUP olarak şu hizmetleri sunuyoruz:\n🛡️ Siber Güvenlik\n🤖 Otomasyon\n🌐 Web Geliştirme\n📱 Mobil Uygulama\n💻 Masaüstü Yazılım\n🧠 Yapay Zeka\n\nDetaylar için Hizmetler bölümüne bakabilirsiniz!"
-            },
-            {
-                keywords: ["emrullah", "emrullah çelenk", "siber güvenlik uzmanı"],
-                response: "Emrullah Çelenk, EMEM GROUP'un Siber Güvenlik Uzmanı'dır. Ağ güvenliği, penetrasyon testleri, güvenlik açığı analizi ve siber tehdit istihbaratı alanlarında uzmanlaşmıştır. 🛡️"
-            },
-            {
-                keywords: ["emin", "emin ünal", "yazılım geliştirme uzmanı"],
-                response: "Emin Ünal, EMEM GROUP'un Yazılım Geliştirme Uzmanı'dır. Otomasyon, uygulama geliştirme, web sitesi yapımı ve yapay zeka alanlarında uzmanlaşmıştır. 💻"
-            },
-            {
-                keywords: ["proje", "projeler", "çalışma", "portföy"],
-                response: "Öne çıkan projelerimiz:\n🧠 Yapay Zeka Asistanı\n📊 Excel Otomasyon Aracı\n🤖 Telegram Botu\n🛡️ Siber Güvenlik Aracı\n\nDetaylar için Projeler bölümüne göz atabilirsiniz!"
-            },
-            {
-                keywords: ["iletişim", "ulaş", "mail", "adres", "telefon", "numara"],
-                response: "Bize şu kanallardan ulaşabilirsiniz:\n📧 info@ememgroup.com\n📞 +90 555 555 55 55\n📍 İstanbul / Türkiye\n\nİletişim formunu doldurarak da bize yazabilirsiniz! 📬"
-            },
-            {
-                keywords: ["indirme", "download", "araç", "araçlar", "indir"],
-                response: "Tüm araçlarımıza İndirme Merkezi'nden ulaşabilirsiniz. Yapay Zeka Asistanı, Excel Otomasyon Aracı, Telegram Botu ve Siber Güvenlik Aracı ücretsiz olarak indirilmeye hazır! 📦"
-            },
-            {
-                keywords: ["teşekkür", "sağol", "tesekkürler", "thanks", "sağ ol"],
-                response: "Rica ederim! 🎉 Size yardımcı olabildiğime çok sevindim. Başka sorularınız varsa her zaman buradayım. EMEM GROUP ailesi olarak sizi ağırlamaktan mutluluk duyarız! 🌟"
-            },
-            {
-                keywords: ["görüşürüz", "hoşçakal", "bye", "goodbye", "güle güle"],
-                response: "Görüşmek üzere! 👋 Her zaman kapımız açık. EMEM GROUP olarak sizi bekleriz. İyi günler dileriz! 🌟"
-            }
-        ];
+    function findResponse(message) {
+        const lowerMsg = message.toLowerCase().trim();
 
-        // ----- YANIT BULMA -----
-        function findResponse(message) {
-            const lowerMsg = message.toLowerCase();
-
-            if (message.trim().length === 0) {
-                return "Lütfen bir şeyler yazın. Size yardımcı olmaktan mutluluk duyarım! 🤖";
-            }
-
-            for (let item of knowledgeBase) {
-                for (let keyword of item.keywords) {
-                    if (lowerMsg.includes(keyword)) {
-                        return item.response;
-                    }
-                }
-            }
-
-            return "🤔 Hmm, bunu henüz öğrenmedim. Bana biraz daha bilgi verebilir misiniz? Ya da doğrudan iletişim formundan bize ulaşabilirsiniz! 📬";
+        if (lowerMsg.length === 0) {
+            return "Lütfen bir şeyler yazın. Size yardımcı olmaktan mutluluk duyarım! 🤖";
         }
 
-        // ----- CHAT FONKSİYONLARI -----
-        const chatBtn = document.getElementById('chatBtn');
-        const chatWindow = document.getElementById('chatWindow');
-        const chatClose = document.getElementById('chatClose');
-        const chatMessages = document.getElementById('chatMessages');
-        const chatInput = document.getElementById('chatInput');
-        const chatSend = document.getElementById('chatSend');
+        for (let item of knowledgeBase) {
+            for (let keyword of item.keywords) {
+                if (lowerMsg.includes(keyword)) {
+                    return item.response;
+                }
+            }
+        }
 
+        return "🤔 Hmm, bunu henüz öğrenmedim. Bana biraz daha bilgi verebilir misiniz? Ya da doğrudan iletişim formundan bize ulaşabilirsiniz! 📬";
+    }
+
+    // Chat elementleri
+    const chatBtn = document.getElementById('chatBtn');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatClose = document.getElementById('chatClose');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const chatSend = document.getElementById('chatSend');
+
+    if (chatBtn && chatWindow) {
         chatBtn.addEventListener('click', () => {
             chatWindow.classList.toggle('open');
             if (chatWindow.classList.contains('open')) {
-                chatInput.focus();
-                if (chatMessages.children.length === 0) {
+                if (chatInput) chatInput.focus();
+                if (chatMessages && chatMessages.children.length === 0) {
                     addMessage('bot', 'Merhaba! 👋 EMEM GROUP Yapay Zeka Asistanı\'yım. Size nasıl yardımcı olabilirim?');
                 }
             }
         });
+    }
 
+    if (chatClose && chatWindow) {
         chatClose.addEventListener('click', () => {
             chatWindow.classList.remove('open');
         });
+    }
 
-        function addMessage(sender, text) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `chat-msg ${sender}`;
+    function addMessage(sender, text) {
+        if (!chatMessages) return;
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `chat-msg ${sender}`;
 
-            const avatar = document.createElement('div');
-            avatar.className = 'avatar';
-            avatar.textContent = sender === 'bot' ? '🤖' : '👤';
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = sender === 'bot' ? '🤖' : '👤';
 
-            const bubble = document.createElement('div');
-            bubble.className = 'bubble';
-            bubble.innerHTML = text.replace(/\n/g, '<br>');
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerHTML = text.replace(/\n/g, '<br>');
 
-            const time = document.createElement('span');
-            time.className = 'time';
-            const now = new Date();
-            time.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        const time = document.createElement('span');
+        time.className = 'time';
+        const now = new Date();
+        time.textContent = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
 
-            bubble.appendChild(time);
-            msgDiv.appendChild(avatar);
-            msgDiv.appendChild(bubble);
-            chatMessages.appendChild(msgDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
+        bubble.appendChild(time);
+        msgDiv.appendChild(avatar);
+        msgDiv.appendChild(bubble);
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
 
-        function sendMessage() {
-            const message = chatInput.value.trim();
-            if (message === '') return;
+    function sendMessage() {
+        if (!chatInput) return;
+        const message = chatInput.value.trim();
+        if (message === '') return;
 
-            addMessage('user', message);
-            chatInput.value = '';
+        addMessage('user', message);
+        chatInput.value = '';
 
-            setTimeout(() => {
-                const response = findResponse(message);
-                addMessage('bot', response);
-            }, 400 + Math.random() * 600);
-        }
+        setTimeout(() => {
+            const response = findResponse(message);
+            addMessage('bot', response);
+        }, 400 + Math.random() * 600);
+    }
 
+    if (chatInput) {
         chatInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 sendMessage();
             }
         });
+    }
 
+    if (chatSend) {
         chatSend.addEventListener('click', sendMessage);
+    }
 
-        document.addEventListener('click', (e) => {
-            if (chatWindow.classList.contains('open')) {
-                const isClickInside = chatWindow.contains(e.target) || chatBtn.contains(e.target);
-                if (!isClickInside) {
-                    chatWindow.classList.remove('open');
-                }
+    document.addEventListener('click', (e) => {
+        if (chatWindow && chatWindow.classList.contains('open')) {
+            const isClickInside = chatWindow.contains(e.target) || (chatBtn && chatBtn.contains(e.target));
+            if (!isClickInside) {
+                chatWindow.classList.remove('open');
             }
-        });
+        }
+    });
 
-        console.log('🚀 EMEM GROUP - Dijital Dönüşüm Lideri');
-        console.log('📧 info@ememgroup.com');
-        console.log('🤖 Yapay Zeka Asistanı hazır!');
-    </script>
+    console.log('🚀 EMEM GROUP - Dijital Dönüşüm Lideri');
+    console.log('📧 info@ememgroup.com');
+    console.log('🤖 Yapay Zeka Asistanı hazır!');
+    console.log('🔐 Supabase Auth sistemi aktif!');
+    console.log('🌓 Tema sistemi aktif!');
+    console.log('⬆️ Back to Top butonu aktif!');
+    console.log('✨ Tüm efektler ve animasyonlar aktif!');
+</script>
 
 </body>
 </html>
