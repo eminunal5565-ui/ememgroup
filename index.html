@@ -1528,7 +1528,7 @@
             border: 1px solid rgba(108, 99, 255, 0.04);
         }
 
-        /* PROJELER */
+        /* PROJELER - STİLLER */
         .projects-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -2849,7 +2849,7 @@ BAŞARI İSTATİSTİKLERİ
 </section>
 
 <!-- ================================================================
-PROJELER - SABİT HTML İÇERİK
+PROJELER - DİNAMİK (API'den gelecek)
 ================================================================ -->
 <section id="projeler" style="background: rgba(255,255,255,0.01);">
     <div class="container">
@@ -2858,57 +2858,12 @@ PROJELER - SABİT HTML İÇERİK
             <h2 class="section-title reveal delay-1">Öne Çıkan <span class="highlight">Projeler</span></h2>
             <p class="section-subtitle mx-auto reveal delay-2">EMEM GROUP'un geliştirdiği başarılı projeleri keşfedin.</p>
         </div>
-        <div class="projects-grid" style="margin-top:48px;">
-            <!-- Proje 1 -->
-            <div class="project-card glow-card reveal delay-1">
-                <span class="icon">🧠</span>
-                <div class="project-tags">
-                    <span>AI</span>
-                    <span>Python</span>
-                    <span>NLP</span>
-                </div>
-                <h3>Yapay Zeka Asistanı</h3>
-                <p class="desc">Akıllı sohbet botu ve otomasyon asistanı uygulaması.</p>
-                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-            </div>
 
-            <!-- Proje 2 -->
-            <div class="project-card glow-card reveal delay-2">
-                <span class="icon">📊</span>
-                <div class="project-tags">
-                    <span>Excel</span>
-                    <span>Otomasyon</span>
-                    <span>Python</span>
-                </div>
-                <h3>Excel Otomasyon Aracı</h3>
-                <p class="desc">Excel verilerinizi otomatik olarak işleyen pratik araç.</p>
-                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-            </div>
-
-            <!-- Proje 3 -->
-            <div class="project-card glow-card reveal delay-3">
-                <span class="icon">🤖</span>
-                <div class="project-tags">
-                    <span>Telegram</span>
-                    <span>Bot</span>
-                    <span>Python</span>
-                </div>
-                <h3>Telegram Botu</h3>
-                <p class="desc">Otomatik mesajlaşma ve anlık bildirim botu.</p>
-                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
-            </div>
-
-            <!-- Proje 4 -->
-            <div class="project-card glow-card reveal delay-4">
-                <span class="icon">🛡️</span>
-                <div class="project-tags">
-                    <span>Güvenlik</span>
-                    <span>Nmap</span>
-                    <span>Python</span>
-                </div>
-                <h3>Siber Güvenlik Aracı</h3>
-                <p class="desc">Ağ tarama ve güvenlik analizi yapan kapsamlı araç.</p>
-                <a href="#" class="btn-download"><i class="fas fa-download"></i> İndir</a>
+        <!-- Projeler buraya JavaScript ile doldurulacak -->
+        <div class="projects-grid" style="margin-top:48px;" id="projectsContainer">
+            <div class="text-center py-5" style="grid-column: 1 / -1;" id="loadingProjects">
+                <i class="fas fa-spinner fa-spin" style="font-size:3rem; color:var(--primary);"></i>
+                <p class="mt-3" style="color:var(--text-gray);">Projeler yükleniyor...</p>
             </div>
         </div>
     </div>
@@ -3644,6 +3599,136 @@ JAVASCRIPT - SADECE GEREKLİ FONKSİYONLAR
     });
 
     // ================================================================
+    // PROJELERİ API'DEN ÇEK
+    // ================================================================
+    async function loadProjects() {
+        const container = document.getElementById('projectsContainer');
+        const loading = document.getElementById('loadingProjects');
+
+        try {
+            const response = await fetch('http://localhost:5134/api/projects');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP Hatası: ${response.status}`);
+            }
+            
+            const projects = await response.json();
+
+            // Yükleniyor yazısını kaldır
+            if (loading) loading.remove();
+
+            if (!projects || projects.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-5" style="grid-column: 1 / -1;">
+                        <i class="fas fa-folder-open" style="font-size:4rem; color:var(--text-gray);"></i>
+                        <h4 class="mt-3" style="color:var(--text-white);">Henüz proje bulunmuyor</h4>
+                        <p class="text-muted">Yakında projeler eklenecek.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = '';
+
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card glow-card reveal';
+                
+                // Etiketleri oluştur
+                let tagsHtml = '';
+                if (project.tags) {
+                    const tags = project.tags.split(',').map(t => t.trim());
+                    tagsHtml = tags.map(tag => `<span>${tag}</span>`).join('');
+                }
+
+                // İndirme butonu
+                let downloadHtml = '';
+                if (project.filePath) {
+                    downloadHtml = `
+                        <a href="#" class="btn-download" onclick="downloadProject(${project.id}, event)">
+                            <i class="fas fa-download"></i> İndir
+                            <small class="ms-1">(${project.fileSize || '0'} MB)</small>
+                        </a>
+                        <small class="d-block text-muted mt-1">
+                            <i class="fas fa-download"></i> ${project.downloadCount || 0} indirme
+                        </small>
+                    `;
+                } else {
+                    downloadHtml = `<span class="text-muted">📦 Dosya yakında eklenecek</span>`;
+                }
+
+                card.innerHTML = `
+                    <span class="icon">${project.icon || '📦'}</span>
+                    <div class="project-tags">
+                        ${tagsHtml}
+                    </div>
+                    <h3>${project.title}</h3>
+                    <p class="desc">${project.description}</p>
+                    ${downloadHtml}
+                `;
+
+                container.appendChild(card);
+            });
+
+            // Reveal animasyonlarını tetikle
+            document.querySelectorAll('.reveal').forEach(el => {
+                el.classList.add('visible');
+            });
+
+        } catch (error) {
+            console.error('Projeler yüklenirken hata:', error);
+            if (loading) loading.remove();
+            container.innerHTML = `
+                <div class="text-center py-5" style="grid-column: 1 / -1;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:3rem; color:#f87171;"></i>
+                    <h4 class="mt-3" style="color:var(--text-white);">Projeler yüklenirken hata oluştu</h4>
+                    <p class="text-muted">API'nin çalıştığından emin olun: http://localhost:5134/api/projects</p>
+                    <button onclick="loadProjects()" class="btn btn-primary mt-3">
+                        <i class="fas fa-sync"></i> Tekrar Dene
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    // ================================================================
+    // PROJE İNDİR
+    // ================================================================
+    async function downloadProject(projectId, event) {
+        if (event) event.preventDefault();
+        
+        try {
+            const response = await fetch(`http://localhost:5134/api/projects/${projectId}/download`, {
+                method: 'POST'
+            });
+
+            if (!response.ok) {
+                throw new Error('İndirme başlatılamadı.');
+            }
+
+            const data = await response.json();
+
+            if (data.downloadUrl) {
+                window.location.href = `http://localhost:5134${data.downloadUrl}`;
+                showToast('✅ İndirme başladı!', 'success');
+            } else {
+                showToast('❌ Dosya bulunamadı.', 'error');
+            }
+        } catch (error) {
+            console.error('Hata:', error);
+            showToast('❌ İndirme sırasında bir hata oluştu.', 'error');
+        }
+    }
+
+    // ================================================================
+    // SAYFA YÜKLENDİĞİNDE PROJELERİ GETİR
+    // ================================================================
+    document.addEventListener('DOMContentLoaded', function() {
+        // Biraz gecikmeyle yükle (sayfa tamamen açılsın)
+        setTimeout(loadProjects, 500);
+    });
+
+    // ================================================================
     // DOWNLOAD HANDLER
     // ================================================================
     function downloadHandler(name) {
@@ -3656,7 +3741,7 @@ JAVASCRIPT - SADECE GEREKLİ FONKSİYONLAR
     console.log('🌓 Tema sistemi aktif!');
     console.log('⬆️ Back to Top butonu aktif!');
     console.log('✨ Tüm efektler ve animasyonlar aktif!');
-    console.log('✅ Projeler ve Blog yazıları sabit HTML ile gösteriliyor!');
+    console.log('✅ Projeler API\'den dinamik olarak yükleniyor!');
 </script>
 
 </body>
