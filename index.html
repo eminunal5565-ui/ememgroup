@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+localhost:5134<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8" />
@@ -3606,7 +3606,7 @@ JAVASCRIPT - SADECE GEREKLİ FONKSİYONLAR
         const loading = document.getElementById('loadingProjects');
 
         try {
-            const response = await fetch('http://localhost:5134/api/projects');
+            const response = await fetch('http://172.20.10.3:5134/api/projects');
             
             if (!response.ok) {
                 throw new Error(`HTTP Hatası: ${response.status}`);
@@ -3622,7 +3622,8 @@ JAVASCRIPT - SADECE GEREKLİ FONKSİYONLAR
                     <div class="text-center py-5" style="grid-column: 1 / -1;">
                         <i class="fas fa-folder-open" style="font-size:4rem; color:var(--text-gray);"></i>
                         <h4 class="mt-3" style="color:var(--text-white);">Henüz proje bulunmuyor</h4>
-                        <p class="text-muted">Yakında projeler eklenecek.</p>
+                        <p class="text-muted">API'nin çalıştığından emin olun: http://172.20.10.3:5134/api/projects</p>
+
                     </div>
                 `;
                 return;
@@ -3698,9 +3699,9 @@ JAVASCRIPT - SADECE GEREKLİ FONKSİYONLAR
         if (event) event.preventDefault();
         
         try {
-            const response = await fetch(`http://localhost:5134/api/projects/${projectId}/download`, {
+            const response = await fetch(`http://172.20.10.3:5134/api/projects/${projectId}/download`); {
                 method: 'POST'
-            });
+            };
 
             if (!response.ok) {
                 throw new Error('İndirme başlatılamadı.');
@@ -3709,7 +3710,7 @@ JAVASCRIPT - SADECE GEREKLİ FONKSİYONLAR
             const data = await response.json();
 
             if (data.downloadUrl) {
-                window.location.href = `http://localhost:5134${data.downloadUrl}`;
+                window.location.href = `http://172.20.10.3:5134${data.downloadUrl}`;
                 showToast('✅ İndirme başladı!', 'success');
             } else {
                 showToast('❌ Dosya bulunamadı.', 'error');
